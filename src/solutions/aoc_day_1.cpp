@@ -7,6 +7,8 @@
 #include "aoc_day_1.h"
 #include "file_utils.h"
 
+#define DIGITS "0123456789"
+
 using namespace std;
 
 AocDay1::AocDay1():AocDay(1)
@@ -17,57 +19,43 @@ AocDay1::~AocDay1()
 {
 }
 
-vector<long> AocDay1::read_input(string filename)
+vector<string> AocDay1::read_input(string filename)
 {
     FileUtils fileutils;
-    vector<string> raw_lines;
-    vector<long> data;
-    if (!fileutils.read_as_list_of_strings(filename, raw_lines))
+    vector<string> data;
+    if (!fileutils.read_as_list_of_strings(filename, data))
     {
         cerr << "Error reading in the data from " << filename << endl;
-        return data;
-    }
-    for (vector<string>::iterator iter = raw_lines.begin(); iter != raw_lines.end(); ++iter)
-    {
-        long l;
-        string to_convert = *iter;
-        l = strtol(to_convert.c_str(), NULL, 10);
-        data.push_back(l);
     }
     return data;
 }
 
+long AocDay1::get_calibration_value(string input)
+{
+    string::size_type first_index = input.find_first_of(DIGITS);
+    string::size_type last_index = input.find_last_of(DIGITS);
+    
+    // calibration value is first digit in tens position and last digit in ones position
+    long value = ((input[first_index] - '0')*10) + (input[last_index] - '0');
+    
+#ifdef DEBUG_DAY_1
+    cout << input << " has value " << value << " from positions " 
+         << first_index << "=" << input[first_index] << " and " 
+         << last_index << "=" << input[last_index] << endl;
+#endif
+    return value;
+}
+
 string AocDay1::part1(string filename, vector<string> extra_args)
 {
-    vector<long> data = read_input(filename);
+    vector<string> data = read_input(filename);
     long sum = 0;
-    for (vector<long>::iterator iter = data.begin(); iter != data.end(); ++iter)
+    for (vector<string>::iterator iter = data.begin(); iter != data.end(); ++iter)
     {
-        sum+=*iter;
+        sum+=get_calibration_value(*iter);
     }
     ostringstream out;
     out << sum;
     return out.str();
 }
 
-string AocDay1::part2(string filename, vector<string> extra_args)
-{
-    if (extra_args.size() > 0)
-    {
-        cout << "There are " << extra_args.size() << " extra arguments given:" << endl;
-        for (vector<string>::iterator iter = extra_args.begin(); iter != extra_args.end(); ++iter)
-        {
-            cout << "[" << *iter << "]" << endl;
-        }
-    }
-    
-    vector<long> data = read_input(filename);
-    long sum = 0;
-    for (vector<long>::iterator iter = data.begin(); iter != data.end(); ++iter)
-    {
-        sum-=*iter;
-    }
-    ostringstream out;
-    out << sum;
-    return out.str();
-}
