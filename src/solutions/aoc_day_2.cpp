@@ -84,12 +84,12 @@ namespace Day2
             cout << " Round red=" << m_rounds[i]->get_count(red)
                  << " green=" << m_rounds[i]->get_count(green)
                  << " blue=" << m_rounds[i]->get_count(blue)
-                 << (possible ? "is" : "is not") << " possible" << endl;
+                 << (possible ? " is" : "is not") << " possible" << endl;
 #endif
             all_possible = all_possible && possible;
         }
 #ifdef DEBUG_DAY_2
-        cout << " End result is " << (all_possible ? "is" : "is not") << " possible" << endl;
+        cout << " End result " << (all_possible ? "is" : "is not") << " possible" << endl;
 #endif
         return all_possible;
     }
@@ -132,7 +132,7 @@ Game * AocDay2::create_game(vector<string> input_line)
 #endif
     Game * game = new Game(id);
     Round * round = new Round();;
-    for (int count_pos=2; count_pos<=input_line.size(); count_pos+=2)
+    for (int count_pos=2; count_pos<input_line.size(); count_pos+=2)
     {
         int color_pos = count_pos+1;
         int count = strtol(input_line[count_pos].c_str(), NULL, 10);
@@ -157,7 +157,7 @@ Game * AocDay2::create_game(vector<string> input_line)
         if (input_line[color_pos][input_line[color_pos].length()-1] == ';')
         {
 #ifdef DEBUG_DAY_2
-            cout << " Adding last round with red=" << round->get_count(red)
+            cout << " Adding round with red=" << round->get_count(red)
                 << " green=" << round->get_count(green)
                 << " blue=" << round->get_count(blue) << endl;
 #endif
