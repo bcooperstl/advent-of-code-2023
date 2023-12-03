@@ -31,12 +31,14 @@ namespace Day2
         private:
             vector<Round *> m_rounds;
             int m_id;
+            Round calculate_minimal_round();
         public:
             Game(int id);
             ~Game();
             int get_id();
             void add_round(Round * round);
             bool is_possible(int num_red, int num_green, int num_blue);
+            int get_power_for_minimal_round();
     };
     
 }
@@ -52,7 +54,7 @@ class AocDay2 : public AocDay
         AocDay2();
         ~AocDay2();
         string part1(string filename, vector<string> extra_args);
-        //string part2(string filename, vector<string> extra_args);
+        string part2(string filename, vector<string> extra_args);
 };
 
 

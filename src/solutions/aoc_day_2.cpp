@@ -94,6 +94,41 @@ namespace Day2
         return all_possible;
     }
     
+    Round Game::calculate_minimal_round()
+    {
+        Round minimal;
+        for (int i=0; i<m_rounds.size(); i++)
+        {
+            if (m_rounds[i]->get_count(red) > minimal.get_count(red))
+            {
+                minimal.set_count(red, m_rounds[i]->get_count(red));
+            }
+            if (m_rounds[i]->get_count(green) > minimal.get_count(green))
+            {
+                minimal.set_count(green, m_rounds[i]->get_count(green));
+            }
+            if (m_rounds[i]->get_count(blue) > minimal.get_count(blue))
+            {
+                minimal.set_count(blue, m_rounds[i]->get_count(blue));
+            }
+        }
+#ifdef DEBUG_DAY_2
+        cout << "Minimal set for game " << m_id << " is red=" << minimal.get_count(red)
+             << " green=" << minimal.get_count(green)
+             << " blue=" << minimal.get_count(blue) << endl;
+#endif
+        return minimal;
+    }
+    
+    int Game::get_power_for_minimal_round()
+    {
+        Round minimal = calculate_minimal_round();
+        int power = minimal.get_count(red) * minimal.get_count(green) * minimal.get_count(blue);
+#ifdef DEBUG_DAY_2
+        cout << "Power for game " << m_id << " is " << power  << endl;
+#endif
+        return power;
+    }
 }
 
 AocDay2::AocDay2():AocDay(2)
@@ -175,8 +210,7 @@ Game * AocDay2::create_game(vector<string> input_line)
     
     return game;
 }
-    
-    
+        
 string AocDay2::part1(string filename, vector<string> extra_args)
 {
     vector<vector<string>> data = read_input(filename);
@@ -208,3 +242,30 @@ string AocDay2::part1(string filename, vector<string> extra_args)
     return out.str();
 }
 
+string AocDay2::part2(string filename, vector<string> extra_args)
+{
+    vector<vector<string>> data = read_input(filename);
+    
+    vector<Game *> games;
+    for (int i=0; i<data.size(); i++)
+    {
+        games.push_back(create_game(data[i]));
+    }
+    
+    int sum = 0;
+    
+    for (int i=0; i<games.size(); i++)
+    {
+        sum+=games[i]->get_power_for_minimal_round();
+    }
+    
+    ostringstream out;
+    out << sum;
+
+    for (int i=0; i<games.size(); i++)
+    {
+        delete games[i];
+    }
+
+    return out.str();
+}
