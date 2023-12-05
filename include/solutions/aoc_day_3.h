@@ -7,6 +7,33 @@
 
 namespace Day3
 {
+    class Gear
+    {
+        private:
+            int m_row;
+            int m_col;
+            vector<int> m_part_numbers;
+        public:
+            Gear(int row, int col);
+            ~Gear();
+            void add_part_number(int part_number);
+            bool is_valid_gear();
+            int get_gear_ratio();
+            int get_row();
+            int get_col();
+    };
+    
+    class Gears
+    {
+        private:
+            vector<Gear *> m_gears;
+        public:
+            Gears();
+            ~Gears();
+            vector<Gear *> get_valid_gears();
+            void add_part_number_to_gear(int row, int col, int part_number);
+    };
+    
     class Schematic
     {
         private:

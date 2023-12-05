@@ -13,9 +13,112 @@ using namespace std;
 using namespace Day3;
 
 #define NON_SYMBOL '.'
+#define GEAR '*'
 
 namespace Day3
 {
+    Gear::Gear(int row, int col)
+    {
+        m_row = row;
+        m_col = col;
+    }
+    
+    Gear::~Gear()
+    {
+    }
+    
+    void Gear::add_part_number(int part_number)
+    {
+#ifdef DEBUG_DAY_3
+        cout << "Gear at row " << m_row << " column " << m_col << " connect to part number " << part_number << endl;
+#endif
+        m_part_numbers.push_back(part_number);
+    }
+    
+    bool Gear::is_valid_gear()
+    {
+        return (m_part_numbers.size() == 2);
+    }
+    
+    int Gear::get_gear_ratio()
+    {
+        if (!is_valid_gear())
+        {
+            return 0;
+        }
+#ifdef DEBUG_DAY_3
+        cout << "Gear at row " << m_row << " column " << m_col << " has gear ratio " << m_part_numbers[0] << " * " << m_part_numbers[1] << " = " << m_part_numbers[0] * m_part_numbers[1] << endl;
+#endif
+        return m_part_numbers[0] * m_part_numbers[1];
+    }
+    
+    int Gear::get_row()
+    {
+        return m_row;
+    }
+    
+    int Gear::get_col()
+    {
+        return m_col;
+    }
+    
+    Gears::Gears()
+    {
+    }
+    
+    Gears::~Gears()
+    {
+        for (int i=0; i<m_gears.size(); i++)
+        {
+            delete m_gears[i];
+        }
+    }
+    
+    vector<Gear *> Gears::get_valid_gears()
+    {
+#ifdef DEBUG_DAY_3
+        cout << "Fetching valid gears:" << endl;
+#endif
+        vector<Gear *> valid;
+        for (int i=0; i<m_gears.size(); i++)
+        {
+            if (m_gears[i]->is_valid_gear())
+            {
+#ifdef DEBUG_DAY_3
+                cout << "Gear at row " << m_gears[i]->get_row() << " column " << m_gears[i]->get_col() << " is valid" << endl;
+#endif
+                valid.push_back(m_gears[i]);
+            }
+            else
+            {
+#ifdef DEBUG_DAY_3
+                cout << "Gear at row " << m_gears[i]->get_row() << " column " << m_gears[i]->get_col() << " is not valid" << endl;
+#endif
+            }
+        }
+        return valid;
+    }
+    
+    void Gears::add_part_number_to_gear(int row, int col, int part_number)
+    {
+        Gear * match = NULL;
+        for (int i=0; i<m_gears.size(); i++)
+        {
+            if ((m_gears[i]->get_row() == row) && (m_gears[i]->get_col() == col))
+            {
+                match = m_gears[i];
+            }
+        }
+        if (match == NULL)
+        {
+#ifdef DEBUG_DAY_3
+            cout << "Creating new gear at row " << row << " column " << col << endl;
+#endif
+            match = new Gear(row, col);
+        }
+        match->add_part_number(part_number);
+    }
+
     Schematic::Schematic()
     {
         m_num_rows = 0;
