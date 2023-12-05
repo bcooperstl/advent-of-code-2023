@@ -115,6 +115,7 @@ namespace Day3
             cout << "Creating new gear at row " << row << " column " << col << endl;
 #endif
             match = new Gear(row, col);
+            m_gears.push_back(match);
         }
         match->add_part_number(part_number);
     }
@@ -240,7 +241,7 @@ namespace Day3
         for (int col=(start_col-1); col<=(end_col+1); col++)
         {
             // above row
-            if (m_schematic[row-1][col] != NON_SYMBOL)
+            if (m_schematic[row-1][col] == GEAR_SYMBOL)
             {
 #ifdef DEBUG_DAY_3
                 cout << "  Gear symbol " << m_schematic[row-1][col] << " found at row " << row-1 << " column " << col << endl;
@@ -248,7 +249,7 @@ namespace Day3
                 gears->add_part_number_to_gear(row-1, col, part_number);
             }
             // below row
-            if (m_schematic[row+1][col] != NON_SYMBOL)
+            if (m_schematic[row+1][col] == GEAR_SYMBOL)
             {
 #ifdef DEBUG_DAY_3
                 cout << "  Gear symbol " << m_schematic[row+1][col] << " found at row " << row+1 << " column " << col << endl;
@@ -362,6 +363,28 @@ string AocDay3::part1(string filename, vector<string> extra_args)
     for (int i=0; i<part_numbers.size(); i++)
     {
         sum+=part_numbers[i];
+    }
+    
+    ostringstream out;
+    out << sum;
+    return out.str();
+}
+
+string AocDay3::part2(string filename, vector<string> extra_args)
+{
+    vector<string> data = read_input(filename);
+    Schematic schematic;
+    schematic.load_schematic(data);
+    Gears gears;
+    
+    schematic.match_part_numbers_to_gears(&gears);
+    
+    vector<Gear *> valid_gears = gears.get_valid_gears();
+    
+    int sum = 0;
+    for (int i=0; i<valid_gears.size(); i++)
+    {
+        sum+=valid_gears[i]->get_gear_ratio();
     }
     
     ostringstream out;
