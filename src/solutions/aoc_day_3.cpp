@@ -13,7 +13,7 @@ using namespace std;
 using namespace Day3;
 
 #define NON_SYMBOL '.'
-#define GEAR '*'
+#define GEAR_SYMBOL '*'
 
 namespace Day3
 {
@@ -213,6 +213,52 @@ namespace Day3
         return false;
     }
     
+    // This function assumes the row and cols are in range and border can be examined
+    // This function also assumes that there aren't digits to the left of start and right of end
+    void Schematic::load_part_number_to_gears(int row, int start_col, int end_col, int part_number, Gears * gears)
+    {
+#ifdef DEBUG_DAY_3
+        cout << " Checking for neighboring gears for " << part_number << " at row " << row << " cols " << start_col << "-" << end_col << endl;
+#endif
+        // check left for start col
+        if (m_schematic[row][start_col-1] == GEAR_SYMBOL)
+        {
+#ifdef DEBUG_DAY_3
+            cout << "  Gear symbol " << m_schematic[row][start_col-1] << " found at row " << row << " column " << start_col - 1 << endl;
+#endif
+            gears->add_part_number_to_gear(row, start_col-1, part_number);
+        }
+        // check right for end col
+        if (m_schematic[row][end_col+1] == GEAR_SYMBOL)
+        {
+#ifdef DEBUG_DAY_3
+            cout << "  Gear symbol " << m_schematic[row][end_col+1] << " found at row " << row << " column " << end_col + 1 << endl;
+#endif
+            gears->add_part_number_to_gear(row, end_col+1, part_number);
+        }
+        // check above and below rows from start_col-1 to end_col+1 to count for diagonals
+        for (int col=(start_col-1); col<=(end_col+1); col++)
+        {
+            // above row
+            if (m_schematic[row-1][col] != NON_SYMBOL)
+            {
+#ifdef DEBUG_DAY_3
+                cout << "  Gear symbol " << m_schematic[row-1][col] << " found at row " << row-1 << " column " << col << endl;
+#endif
+                gears->add_part_number_to_gear(row-1, col, part_number);
+            }
+            // below row
+            if (m_schematic[row+1][col] != NON_SYMBOL)
+            {
+#ifdef DEBUG_DAY_3
+                cout << "  Gear symbol " << m_schematic[row+1][col] << " found at row " << row+1 << " column " << col << endl;
+#endif
+                gears->add_part_number_to_gear(row+1, col, part_number);
+            }
+        }
+        return;
+    }
+
     vector<int> Schematic::find_part_numbers()
     {
         vector<int> part_numbers;
@@ -254,6 +300,34 @@ namespace Day3
         }
         
         return part_numbers;
+    }
+
+    void Schematic::match_part_numbers_to_gears(Gears * gears)
+    {
+        int part_number, match_start_col, match_end_col;
+        for (int row=1; row<=m_num_rows; row++)
+        {
+            for (int col=1; col<=m_num_cols; col++)
+            {
+                if (isdigit(m_schematic[row][col])) // found the leading digit
+                {
+                    part_number = 0;
+                    match_start_col = col;
+                    while (isdigit(m_schematic[row][col]))
+                    {
+                        part_number = (part_number * 10) + m_schematic[row][col]-'0';
+                        match_end_col = col;
+                        col++;
+                    }
+                    // at this point, m_schematic[row][col] is not a digit. need to check if the value we found has a symbol neighbor or not
+#ifdef DEBUG_DAY_3
+                    cout << "Found " << part_number << " at row " << row << " columns " << match_start_col << "-" << match_end_col << ". Checking if neighbor has symbol" << endl;
+#endif
+                    load_part_number_to_gears(row, match_start_col, match_end_col, part_number, gears);
+                }
+            }
+        }
+        return;
     }
 }
 

@@ -44,12 +44,14 @@ namespace Day3
             int m_num_rows; // actual number of rows with input data
             int m_num_cols; // actual number of cols with input data
             bool has_neighbor_symbol(int row, int start_col, int end_col);
+            void load_part_number_to_gears(int row, int start_col, int end_col, int part_number, Gears * gears);
         public:
             Schematic();
             ~Schematic();
             void load_schematic(vector<string> input_data);
             void display_schematic();
             vector<int> find_part_numbers();
+            void match_part_numbers_to_gears(Gears * gears);
     };    
 }
 
