@@ -2,7 +2,7 @@ DEBUG=
 #Uncomment the below line to dispaly the runner debug
 #DEBUG+= -DDEBUG_RUNNER
 #Template for other debug flags to be added later
-DEBUG+= -DDEBUG_DAY_3
+DEBUG+= -DDEBUG_DAY_4
 
 #If adding another include directory, be sure to add it here
 CPPFLAGS=-g ${DEBUG} -Iinclude/common -Iinclude/runner -Iinclude/screen -Iinclude/solutions
@@ -76,10 +76,17 @@ build/solutions/aoc_day_3.o: src/solutions/aoc_day_3.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/solutions/aoc_day_3.o -c src/solutions/aoc_day_3.cpp
 
+build/solutions/aoc_day_4.o: src/solutions/aoc_day_4.cpp  \
+	include/solutions/aoc_day_4.h \
+	include/solutions/aoc_day.h \
+	include/common/constants.h
+	g++ ${CPPFLAGS} -o build/solutions/aoc_day_4.o -c src/solutions/aoc_day_4.cpp
+
 bin/lib/libsolutions.a: build/solutions/aoc_day.o  \
 	build/solutions/aoc_day_1.o \
 	build/solutions/aoc_day_2.o \
 	build/solutions/aoc_day_3.o \
+	build/solutions/aoc_day_4.o \
 	build/solutions/aoc_days.o
 	ar rcs bin/lib/libsolutions.a $^
 
@@ -108,6 +115,7 @@ clean:
 	build/solutions/aoc_day_1.o  \
 	build/solutions/aoc_day_2.o  \
 	build/solutions/aoc_day_3.o \
+	build/solutions/aoc_day_4.o \
 	build/solutions/aoc_days.o  \
 	build/aoc.o  \
 	bin/lib/librunner.a  \
@@ -124,6 +132,7 @@ all: build/runner/aoc_test.o  \
 	build/solutions/aoc_day_1.o  \
 	build/solutions/aoc_day_2.o  \
 	build/solutions/aoc_day_3.o \
+	build/solutions/aoc_day_4.o \
 	build/solutions/aoc_days.o  \
 	build/aoc.o  \
 	bin/lib/librunner.a  \
