@@ -115,6 +115,32 @@ namespace Day4
         return m_copies;
     }
     
+    void Card::add_copies(int num_copies)
+    {
+#ifdef DEBUG_DAY_4
+        cout << "Card " << m_card_number << ": added " << num_copies << " copies, resulting in ";
+#endif
+        m_copies+=num_copies;
+#ifdef DEBUG_DAY_4
+        cout << m_copies << " copies" << endl;
+#endif
+    }
+    
+    void Card::check_matches(Cards * cards)
+    {
+        int num_matches = get_matched_numbers().size();
+#ifdef DEBUG_DAY_4
+        cout << "Card " << m_card_number << " has " << num_matches << " matches and " << m_copies << " copies" << endl;
+#endif
+        for (int i=1; i<=num_matches; i++)
+        {
+#ifdef DEBUG_DAY_4
+            cout << " Adding " << m_copies << " to card " << m_card_number+1 << endl;
+#endif
+            cards->add_copies_to_card(m_copies, m_card_number+i);
+        }
+    }
+    
     Cards::Cards()
     {
     }
@@ -159,6 +185,36 @@ namespace Day4
         }
         return sum;
     }
+
+    void Cards::add_copies_to_card(int num_copies, int card_number)
+    {
+        m_card_map[card_number]->add_copies(num_copies);
+    }
+    
+    void Cards::check_all_matches()
+    {
+        map<int, Card *>::iterator pos = m_card_map.begin();
+        while (pos != m_card_map.end())
+        {
+            pos->second->check_matches(this);
+            ++pos;
+        }
+    }
+
+    int Cards::get_total_cards()
+    {
+        int sum = 0;
+        map<int, Card *>::iterator pos = m_card_map.begin();
+        while (pos != m_card_map.end())
+        {
+#ifdef DEBUG_DAY_4
+            cout << "Card " << pos->first << " has " << pos->second->get_copies() << " copies." << endl;
+#endif
+            sum+=pos->second->get_copies();
+            ++pos;
+        }
+        return sum;
+    }
 }
 
 AocDay4::AocDay4():AocDay(4)
@@ -190,5 +246,19 @@ string AocDay4::part1(string filename, vector<string> extra_args)
         
     ostringstream out;
     out << cards.get_total_points();
+    return out.str();
+}
+
+string AocDay4::part2(string filename, vector<string> extra_args)
+{
+    vector<vector<string>> data = read_input(filename);
+    Cards cards;
+    
+    cards.load_from_input(data);
+    
+    cards.check_all_matches();
+    
+    ostringstream out;
+    out << cards.get_total_cards();
     return out.str();
 }

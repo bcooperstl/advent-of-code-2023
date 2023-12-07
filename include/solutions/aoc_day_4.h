@@ -10,6 +10,8 @@
 
 namespace Day4
 {
+    class Cards;
+    
     class Card
     {
         private:
@@ -26,8 +28,8 @@ namespace Day4
             vector<int> get_matched_numbers();
             int get_card_number();
             int get_copies();
-            //int add_copies(int num_copies);
-            //void check_matches(Cards * cards);
+            void add_copies(int num_copies);
+            void check_matches(Cards * cards);
     };
     
     class Cards
@@ -39,7 +41,9 @@ namespace Day4
             ~Cards();
             void load_from_input(vector<vector<string>> input_data);
             int get_total_points();
-            //int get_total_cards();
+            void add_copies_to_card(int num_copies, int card_number);
+            void check_all_matches();
+            int get_total_cards();
     };
 }
 
@@ -53,7 +57,7 @@ class AocDay4 : public AocDay
         AocDay4();
         ~AocDay4();
         string part1(string filename, vector<string> extra_args);
-        //string part2(string filename, vector<string> extra_args);
+        string part2(string filename, vector<string> extra_args);
 };
 
 #endif
