@@ -17,6 +17,7 @@ namespace Day4
         m_card_number = 0;
         m_num_winning_numbers = 0;
         m_num_my_numbers = 0;
+        m_copies = 0;
     }
     
     Card::~Card()
@@ -68,7 +69,7 @@ namespace Day4
 #ifdef DEBUG_DAY_4
         cout << endl;
 #endif
-        
+        m_copies = 1; // start with 1 copy of every card
     }
     
     vector<int> Card::get_matched_numbers()
@@ -108,6 +109,56 @@ namespace Day4
     {
         return m_card_number;
     }
+    
+    int Card::get_copies()
+    {
+        return m_copies;
+    }
+    
+    Cards::Cards()
+    {
+    }
+    
+    Cards::~Cards()
+    {
+        map<int, Card *>::iterator pos = m_card_map.begin();
+        while (pos != m_card_map.end())
+        {
+            delete pos->second;
+            ++pos;
+        }
+        m_card_map.clear();
+    }
+    
+    void Cards::load_from_input(vector<vector<string>> input_data)
+    {
+        for (int i=0; i<input_data.size(); i++)
+        {
+            Card * card = new Card();
+            card->load_from_input(input_data[i]);
+            m_card_map[card->get_card_number()] = card;
+        }
+    }
+    
+    int Cards::get_total_points()
+    {
+        int sum = 0;
+        map<int, Card *>::iterator pos = m_card_map.begin();
+        while (pos != m_card_map.end())
+        {
+            vector<int> matched = pos->second->get_matched_numbers();
+            if (matched.size() > 0)
+            {
+                int points = (1<<(matched.size() - 1));
+                sum+=points;
+#ifdef DEBUG_DAY_4
+                cout << "Card " << pos->first << " is worth " << points << " points." << endl;
+#endif
+            }
+            ++pos;
+        }
+        return sum;
+    }
 }
 
 AocDay4::AocDay4():AocDay(4)
@@ -133,30 +184,11 @@ vector<vector<string>> AocDay4::read_input(string filename)
 string AocDay4::part1(string filename, vector<string> extra_args)
 {
     vector<vector<string>> data = read_input(filename);
-    vector<Card> cards;
+    Cards cards;
     
-    for (int i=0; i<data.size(); i++)
-    {
-        Card card;
-        card.load_from_input(data[i]);
-        cards.push_back(card);
-    }
-    
-    int sum = 0;
-    for (int i=0; i<cards.size(); i++)
-    {
-        vector<int> matched = cards[i].get_matched_numbers();
-        if (matched.size() > 0)
-        {
-            int points = (1<<(matched.size() - 1));
-            sum+=points;
-#ifdef DEBUG_DAY_4
-            cout << "Card " << cards[i].get_card_number() << " is worth " << points << " points." << endl;
-#endif
-        }
-    }
-    
+    cards.load_from_input(data);
+        
     ostringstream out;
-    out << sum;
+    out << cards.get_total_points();
     return out.str();
 }
