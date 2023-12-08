@@ -60,7 +60,7 @@ namespace Day5
     
     bool Range::is_in_range(long long int value)
     {
-        return (value >= m_source_end && value <= m_source_end);
+        return (value >= m_source_start && value <= m_source_end);
     }
     
     long long int Range::calculate_destination(long long int source)
