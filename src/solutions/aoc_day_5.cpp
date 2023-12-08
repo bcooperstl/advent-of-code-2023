@@ -12,6 +12,24 @@ using namespace Day5;
 
 namespace Day5
 {
+    Path::Path()
+    {
+    }
+    
+    Path::~Path()
+    {
+    }
+    
+    long int Path::get_value(Category category)
+    {
+        return m_values[category];
+    }
+    
+    void Path::set_value(Category category, long int value)
+    {
+        m_values[category] = value;
+    }
+
     Range::Range()
     {
     }

@@ -21,6 +21,17 @@ namespace Day5
         location = 7
     };
 
+    class Path
+    {
+        private:
+            long int m_values[NUM_CATEGORIES];
+        public:
+            Path();
+            ~Path();
+            long int get_value(Category category);
+            void set_value(Category category, long int value);
+    };
+    
     class Range
     {
         private:
