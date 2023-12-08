@@ -24,26 +24,26 @@ namespace Day5
     class Path
     {
         private:
-            long int m_values[NUM_CATEGORIES];
+            long long int m_values[NUM_CATEGORIES];
         public:
             Path();
             ~Path();
-            long int get_value(Category category);
-            void set_value(Category category, long int value);
+            long long int get_value(Category category);
+            void set_value(Category category, long long int value);
     };
     
     class Range
     {
         private:
-            long int m_source_start;
-            long int m_source_end;
-            long int m_adjustment;
+            long long int m_source_start;
+            long long int m_source_end;
+            long long int m_adjustment;
         public:
             Range();
             ~Range();
             void init_range(vector<string> input_data);
-            bool is_in_range(long int value);
-            long int calculate_destination(long int source);
+            bool is_in_range(long long int value);
+            long long int calculate_destination(long long int source);
     };
     
     class CategoryMap
@@ -57,7 +57,7 @@ namespace Day5
             ~CategoryMap();
             void add_range(Range * range);
             vector<Range *> get_ranges();
-            long int apply_map(long int value);
+            long long int apply_map(long long int value);
     };
     
     class Almanac
@@ -69,6 +69,7 @@ namespace Day5
             Almanac();
             ~Almanac();
             void create_maps(vector<vector<string>> input_data);
+            void apply_path_seed_to_location(Path * path);
     };
 }
 
@@ -78,7 +79,7 @@ class AocDay5 : public AocDay
 {
     private:
         vector<vector<string>> read_input(string filename);
-        vector<long int> parse_seeds(vector<vector<string>> input_data);
+        vector<long long int> parse_seeds(vector<vector<string>> input_data);
     public:
         AocDay5();
         ~AocDay5();

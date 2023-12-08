@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <climits>
 
 #include "aoc_day_5.h"
 #include "file_utils.h"
@@ -20,12 +21,12 @@ namespace Day5
     {
     }
     
-    long int Path::get_value(Category category)
+    long long int Path::get_value(Category category)
     {
         return m_values[category];
     }
     
-    void Path::set_value(Category category, long int value)
+    void Path::set_value(Category category, long long int value)
     {
         m_values[category] = value;
     }
@@ -40,12 +41,12 @@ namespace Day5
     
     void Range::init_range(vector<string> input_data)
     {
-        long int destination_range_start = strtoll(input_data[0].c_str(), NULL, 10);
-        long int source_range_start = strtoll(input_data[1].c_str(), NULL, 10);
-        long int range_length = strtoll(input_data[2].c_str(), NULL, 10);
+        long long int destination_range_start = strtoll(input_data[0].c_str(), NULL, 10);
+        long long int source_range_start = strtoll(input_data[1].c_str(), NULL, 10);
+        long long int range_length = strtoll(input_data[2].c_str(), NULL, 10);
         
         m_source_start = source_range_start;
-        m_source_end = source_range_start + range_length - 1l; // 1 long
+        m_source_end = source_range_start + range_length - 1ll; // 1 long long
         m_adjustment = destination_range_start - source_range_start;
         
 #ifdef DEBUG_DAY_5
@@ -57,12 +58,12 @@ namespace Day5
         return;
     }
     
-    bool Range::is_in_range(long int value)
+    bool Range::is_in_range(long long int value)
     {
         return (value >= m_source_end && value <= m_source_end);
     }
     
-    long int Range::calculate_destination(long int source)
+    long long int Range::calculate_destination(long long int source)
     {
         return source + m_adjustment;
     }
@@ -91,7 +92,7 @@ namespace Day5
         return m_ranges;
     }
     
-    long int CategoryMap::apply_map(long int value)
+    long long int CategoryMap::apply_map(long long int value)
     {
 #ifdef DEBUG_DAY_5
         cout << "Applying category " << m_source << " to " << m_destination << " map to value " << value;
@@ -100,7 +101,7 @@ namespace Day5
         {
             if (m_ranges[i]->is_in_range(value))
             {
-                long int applied_value = m_ranges[i]->calculate_destination(value);
+                long long int applied_value = m_ranges[i]->calculate_destination(value);
 #ifdef DEBUG_DAY_5
                 cout << "  Maps to " << applied_value << endl;
 #endif
@@ -187,6 +188,29 @@ namespace Day5
             }
         }
     }
+    
+    void Almanac::apply_path_seed_to_location(Path * path)
+    {
+        path->set_value(soil, m_maps[seed]->apply_map(path->get_value(seed)));
+        path->set_value(fertilizer, m_maps[soil]->apply_map(path->get_value(soil)));
+        path->set_value(water, m_maps[fertilizer]->apply_map(path->get_value(fertilizer)));
+        path->set_value(light, m_maps[water]->apply_map(path->get_value(water)));
+        path->set_value(temperature, m_maps[light]->apply_map(path->get_value(light)));
+        path->set_value(humidity, m_maps[temperature]->apply_map(path->get_value(temperature)));
+        path->set_value(location, m_maps[humidity]->apply_map(path->get_value(humidity)));
+
+#ifdef DEBUG_DAY_5
+        cout << "Applying path for seed " << path->get_value(seed) << endl;
+        cout << " Soil is " << path->get_value(soil) << endl;
+        cout << " Fertilizer is " << path->get_value(fertilizer) << endl;
+        cout << " Water is " << path->get_value(water) << endl;
+        cout << " Light is " << path->get_value(light) << endl;
+        cout << " Temperature is " << path->get_value(temperature) << endl;
+        cout << " Humidity is " << path->get_value(humidity) << endl;
+        cout << " Location is " << path->get_value(location) << endl;
+#endif        
+        
+    }
 }
 
 AocDay5::AocDay5():AocDay(5)
@@ -215,13 +239,13 @@ seeds: 79 14 55 13
 seeds are on line 1, starting at index 1
 */
 
-vector<long int> AocDay5::parse_seeds(vector<vector<string>> input_data)
+vector<long long int> AocDay5::parse_seeds(vector<vector<string>> input_data)
 {
-    vector<long int> seeds;
+    vector<long long int> seeds;
     
     for (int i=1; i<input_data[0].size(); i++)
     {
-        long int seed = strtoll(input_data[0][i].c_str(), NULL, 10);
+        long long int seed = strtoll(input_data[0][i].c_str(), NULL, 10);
         seeds.push_back(seed);
     }
     
@@ -233,13 +257,30 @@ string AocDay5::part1(string filename, vector<string> extra_args)
     vector<vector<string>> data = read_input(filename);
     Almanac almanac;
     
-    vector<long int> seeds = parse_seeds(data);
+    vector<long long int> seeds = parse_seeds(data);
     
     almanac.create_maps(data);
     
+    long long int closest_location = LLONG_MAX;
+    for (int i=0; i<seeds.size(); i++)
+    {
+        Path path;
+        path.set_value(seed, seeds[i]);
+        almanac.apply_path_seed_to_location(&path);
         
+#ifdef DEBUG_DAY_5
+        cout << "Seed " << path.get_value(seed) << " corresponds to location " << path.get_value(location) << endl;
+#endif
+        if (path.get_value(location) < closest_location)
+        {
+            closest_location = path.get_value(location);
+#ifdef DEBUG_DAY_5
+            cout << " New closes location " << closest_location << endl;
+#endif
+        }
+    }
     ostringstream out;
-    out << 0;
+    out << closest_location;
     return out.str();
 }
 
