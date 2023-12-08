@@ -47,6 +47,7 @@ namespace Day5
             long long int calculate_destination(long long int source);
             long long int get_source_start();
             long long int get_source_end();
+            long long int get_num_to_end(long long int value);
             static bool compare_range_pointers(Range * left, Range * right);
     };
     

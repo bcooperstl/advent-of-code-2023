@@ -52,6 +52,11 @@ namespace Day5
         return m_source_end;
     }
     
+    long long int Range::get_num_to_end(long long int value)
+    {
+        return m_source_end - value;
+    }
+    
     void Range::init_range(vector<string> input_data)
     {
         long long int destination_range_start = strtoll(input_data[0].c_str(), NULL, 10);
