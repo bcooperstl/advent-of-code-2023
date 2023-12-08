@@ -120,7 +120,7 @@ namespace Day5
         cout << "Loading Map " << cat << " from line " << start_data_line << endl;
 #endif        
         int range_line = start_data_line+1;
-        while (input_data[range_line].size() > 0)
+        while (range_line < input_data.size() && input_data[range_line].size() > 0 && input_data[range_line][0].length() > 0)
         {
             Range * range = new Range();
             range->init_range(input_data[range_line]);
