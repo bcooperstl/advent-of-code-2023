@@ -4,9 +4,12 @@
 #include <sstream>
 #include <cstdlib>
 #include <climits>
+#include <algorithm>
 
 #include "aoc_day_5.h"
 #include "file_utils.h"
+
+#define MAX_VALUE 4294967295
 
 using namespace std;
 using namespace Day5;
@@ -39,6 +42,16 @@ namespace Day5
     {
     }
     
+    long long int Range::get_source_start()
+    {
+        return m_source_start;
+    }
+    
+    long long int Range::get_source_end()
+    {
+        return m_source_end;
+    }
+    
     void Range::init_range(vector<string> input_data)
     {
         long long int destination_range_start = strtoll(input_data[0].c_str(), NULL, 10);
@@ -58,6 +71,13 @@ namespace Day5
         return;
     }
     
+    void Range::set_range(long long int source_start, long long int source_end, long long int adjustment)
+    {
+        m_source_start = source_start;
+        m_source_end = source_end;
+        m_adjustment = adjustment;
+    }
+    
     bool Range::is_in_range(long long int value)
     {
         return (value >= m_source_start && value <= m_source_end);
@@ -68,6 +88,11 @@ namespace Day5
         return source + m_adjustment;
     }
     
+    bool Range::compare_range_pointers(Range * left, Range * right)
+    {
+        return (left->get_source_start() < right->get_source_end());
+    };
+
     CategoryMap::CategoryMap(Category source, Category destination)
     {
         m_source = source;
@@ -113,6 +138,84 @@ namespace Day5
 #endif        
         return value;
     }
+        
+    void CategoryMap::add_no_change_ranges()
+    {
+#ifdef DEBUG_DAY_5
+        cout << "Adding No Change Ranges" << endl;
+#endif        
+        sort(m_ranges.begin(), m_ranges.end(), Range::compare_range_pointers);
+        
+        int num_ranges = m_ranges.size();
+        
+        // check if we need a starting range
+#ifdef DEBUG_DAY_5
+        cout << " Checking before range " << m_ranges[0]->get_source_start() << " to " << m_ranges[0]->get_source_end() << endl;
+#endif        
+        if (m_ranges[0]->get_source_start() > 0ll)
+        {
+            Range * range = new Range();
+            range->set_range(0ll, m_ranges[0]->get_source_start() - 1ll, 0ll); // from 0 to before the first range (1 long long); no adjustment
+#ifdef DEBUG_DAY_5
+            cout << "  Created starting range from " << range->get_source_start () << " to " << range->get_source_end() << endl;
+#endif        
+            m_ranges.push_back(range);
+        }
+        else
+        {
+#ifdef DEBUG_DAY_5
+            cout << "  No starting range needed" << endl;
+#endif
+        }
+        
+        // check between all the ranges
+        for (int i=0; i<num_ranges-1; i++)
+        {
+#ifdef DEBUG_DAY_5
+            cout << " Checking between ranges " 
+                 << m_ranges[i]->get_source_start() << " to " << m_ranges[i]->get_source_end() << " and " 
+                 << m_ranges[i+1]->get_source_start() << " to " << m_ranges[i+1]->get_source_end() << endl;
+#endif
+            if ((m_ranges[i]->get_source_end() + 1ll) != m_ranges[i+1]->get_source_start()) // 1 long long
+            {
+                Range * range = new Range();
+                range->set_range(m_ranges[i]->get_source_end() + 1ll, m_ranges[i+1]->get_source_start() - 1ll, 0ll); // from 0 to before the first range; no adjustment
+#ifdef DEBUG_DAY_5
+                cout << "  Created in-between range from " << range->get_source_start () << " to " << range->get_source_end() << endl;
+#endif        
+                m_ranges.push_back(range);
+            }
+            else
+            {
+#ifdef DEBUG_DAY_5
+                cout << "  No in-between range needed" << endl;
+#endif
+            }
+        }
+                
+        // check if we need a ending range
+#ifdef DEBUG_DAY_5
+        cout << " Checking before range " << m_ranges[num_ranges-1]->get_source_start() << " to " << m_ranges[num_ranges-1]->get_source_end() << endl;
+#endif        
+        if (m_ranges[num_ranges-1]->get_source_end() < MAX_VALUE)
+        {
+            Range * range = new Range();
+            range->set_range(m_ranges[num_ranges-1]->get_source_end() + 1ll, MAX_VALUE, 0ll); // from after the last range to MAX_VALUE; no adjustment
+#ifdef DEBUG_DAY_5
+            cout << "  Created ending range from " << range->get_source_start () << " to " << range->get_source_end() << endl;
+#endif        
+            m_ranges.push_back(range);
+        }
+        else
+        {
+#ifdef DEBUG_DAY_5
+            cout << "  No ending range needed" << endl;
+#endif
+        }
+        
+        sort(m_ranges.begin(), m_ranges.end(), Range::compare_range_pointers);
+    }
+    
     
     Almanac::Almanac()
     {
@@ -149,6 +252,7 @@ namespace Day5
 #ifdef DEBUG_DAY_5
         cout << "Done loading Map " << cat << ". Map has " << m_maps[cat]->get_ranges().size() << " ranges" << endl;;
 #endif        
+        m_maps[cat]->add_no_change_ranges();
     }
     
     void Almanac::create_maps(vector<vector<string>> input_data)

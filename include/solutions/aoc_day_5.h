@@ -42,8 +42,12 @@ namespace Day5
             Range();
             ~Range();
             void init_range(vector<string> input_data);
+            void set_range(long long int source_start, long long int source_end, long long int adjustment);
             bool is_in_range(long long int value);
             long long int calculate_destination(long long int source);
+            long long int get_source_start();
+            long long int get_source_end();
+            static bool compare_range_pointers(Range * left, Range * right);
     };
     
     class CategoryMap
@@ -58,6 +62,7 @@ namespace Day5
             void add_range(Range * range);
             vector<Range *> get_ranges();
             long long int apply_map(long long int value);
+            void add_no_change_ranges();
     };
     
     class Almanac
