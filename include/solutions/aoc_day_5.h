@@ -86,11 +86,12 @@ class AocDay5 : public AocDay
     private:
         vector<vector<string>> read_input(string filename);
         vector<long long int> parse_seeds(vector<vector<string>> input_data);
+        vector<pair<long long int, long long int>> parse_seeds_to_ranges(vector<vector<string>> input_data);
     public:
         AocDay5();
         ~AocDay5();
         string part1(string filename, vector<string> extra_args);
-        //string part2(string filename, vector<string> extra_args);
+        string part2(string filename, vector<string> extra_args);
 };
 
 #endif

@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <climits>
 #include <algorithm>
+#include <utility>
 
 #include "aoc_day_5.h"
 #include "file_utils.h"
@@ -361,6 +362,32 @@ vector<long long int> AocDay5::parse_seeds(vector<vector<string>> input_data)
     return seeds;
 }
 
+/*
+seeds: 79 14 55 13
+ranges are on line 1, starting with index 1
+first item in range is starting seed number. second item is number of values
+this returns in start/end pairs
+*/
+
+vector<pair<long long int, long long int>> AocDay5::parse_seeds_to_ranges(vector<vector<string>> input_data)
+{
+    vector<pair<long long int, long long int>> seed_ranges;
+    
+    for (int i=1; i<input_data[0].size(); i+=2)
+    {
+        pair<long long int, long long int> seed_range;
+        seed_range.first = strtoll(input_data[0][i].c_str(), NULL, 10);
+        seed_range.second = seed_range.first + strtoll(input_data[0][i+1].c_str(), NULL, 10) - (long long int)1;
+#ifdef DEBUG_DAY_5
+        cout << "Input range definition " << input_data[0][i] << " " << input_data[0][i+1]
+             << " corresponds to range " << seed_range.first << " - " << seed_range.second << endl;
+#endif
+        seed_ranges.push_back(seed_range);
+    }
+    
+    return seed_ranges;
+}
+
 string AocDay5::part1(string filename, vector<string> extra_args)
 {
     vector<vector<string>> data = read_input(filename);
@@ -388,6 +415,41 @@ string AocDay5::part1(string filename, vector<string> extra_args)
 #endif
         }
     }
+    ostringstream out;
+    out << closest_location;
+    return out.str();
+}
+
+string AocDay5::part2(string filename, vector<string> extra_args)
+{
+    vector<vector<string>> data = read_input(filename);
+    Almanac almanac;
+    
+    vector<pair<long long int, long long int>> seed_ranges = parse_seeds_to_ranges(data);
+    
+    almanac.create_maps(data);
+    
+    long long int closest_location = LLONG_MAX;
+/*
+    for (int i=0; i<seeds.size(); i++)
+    {
+        Path path;
+        path.set_value(seed, seeds[i]);
+        almanac.apply_path_seed_to_location(&path);
+        
+#ifdef DEBUG_DAY_5
+        cout << "Seed " << path.get_value(seed) << " corresponds to location " << path.get_value(location) << endl;
+#endif
+        if (path.get_value(location) < closest_location)
+        {
+            closest_location = path.get_value(location);
+#ifdef DEBUG_DAY_5
+            cout << " New closes location " << closest_location << endl;
+#endif
+        }
+    }
+*/
+
     ostringstream out;
     out << closest_location;
     return out.str();
