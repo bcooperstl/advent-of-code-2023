@@ -19,6 +19,7 @@ namespace Day5
 {
     Path::Path()
     {
+        m_num_in_path_ranges = LLONG_MAX;
     }
     
     Path::~Path()
@@ -33,6 +34,19 @@ namespace Day5
     void Path::set_value(Category category, long long int value)
     {
         m_values[category] = value;
+    }
+    
+    long long int Path::get_num_in_path_ranges()
+    {
+        return m_num_in_path_ranges;
+    }
+    
+    void Path::set_num_in_path_ranges_if_lower(long long int num)
+    {
+        if (num < m_num_in_path_ranges)
+        {
+            m_num_in_path_ranges = num;
+        }
     }
 
     Range::Range()
@@ -123,7 +137,7 @@ namespace Day5
         return m_ranges;
     }
     
-    long long int CategoryMap::apply_map(long long int value)
+    long long int CategoryMap::apply_map(long long int value, Range ** matched_range)
     {
 #ifdef DEBUG_DAY_5
         cout << "Applying category " << m_source << " to " << m_destination << " map to value " << value;
@@ -136,12 +150,14 @@ namespace Day5
 #ifdef DEBUG_DAY_5
                 cout << "  Maps to " << applied_value << endl;
 #endif
+                if (matched_range != NULL)
+                {
+                    *matched_range = m_ranges[i];
+                }
                 return applied_value;
             }
-        }        
-#ifdef DEBUG_DAY_5
-        cout << "  No range apples; keeping as " << value << endl;
-#endif        
+        }
+        cerr << "*****SHOULD NOT REACH HERE - RANGE SHOULD BE FOUND" << endl;
         return value;
     }
         
@@ -301,13 +317,74 @@ namespace Day5
     
     void Almanac::apply_path_seed_to_location(Path * path)
     {
-        path->set_value(soil, m_maps[seed]->apply_map(path->get_value(seed)));
-        path->set_value(fertilizer, m_maps[soil]->apply_map(path->get_value(soil)));
-        path->set_value(water, m_maps[fertilizer]->apply_map(path->get_value(fertilizer)));
-        path->set_value(light, m_maps[water]->apply_map(path->get_value(water)));
-        path->set_value(temperature, m_maps[light]->apply_map(path->get_value(light)));
-        path->set_value(humidity, m_maps[temperature]->apply_map(path->get_value(temperature)));
-        path->set_value(location, m_maps[humidity]->apply_map(path->get_value(humidity)));
+        Range ** matched_range;
+
+        // seed to soil
+        path->set_value(soil, m_maps[seed]->apply_map(path->get_value(seed), matched_range));
+#ifdef DEBUG_DAY_5
+        cout << "  seed " << path->get_value(seed) << " corresponds to soil " << path->get_value(soil) << endl;
+        cout << "   seed-to-soil range goes from " <<  (*matched_range)->get_source_start() << " to " << (*matched_range)->get_source_end() << endl;
+        cout << "   There are " << (*matched_range)->get_num_to_end(path->get_value(seed)) << " seed values to the end" << endl;
+#endif
+        path->set_num_in_path_ranges_if_lower((*matched_range)->get_num_to_end(path->get_value(seed)));
+        
+        // soil to fertilizer
+        path->set_value(fertilizer, m_maps[soil]->apply_map(path->get_value(soil), matched_range));
+#ifdef DEBUG_DAY_5
+        cout << "  soil " << path->get_value(soil) << " corresponds to fertilizer " << path->get_value(fertilizer) << endl;
+        cout << "   soil-to-fertilizer range goes from " <<  (*matched_range)->get_source_start() << " to " << (*matched_range)->get_source_end() << endl;
+        cout << "   There are " << (*matched_range)->get_num_to_end(path->get_value(soil)) << " soil values to the end" << endl;
+#endif
+        path->set_num_in_path_ranges_if_lower((*matched_range)->get_num_to_end(path->get_value(soil)));
+
+        // fertilizer to water
+        path->set_value(water, m_maps[fertilizer]->apply_map(path->get_value(fertilizer), matched_range));
+#ifdef DEBUG_DAY_5
+        cout << "  fertilizer " << path->get_value(fertilizer) << " corresponds to water " << path->get_value(water) << endl;
+        cout << "   fertilizer-to-water range goes from " <<  (*matched_range)->get_source_start() << " to " << (*matched_range)->get_source_end() << endl;
+        cout << "   There are " << (*matched_range)->get_num_to_end(path->get_value(fertilizer)) << " fertilizer values to the end" << endl;
+#endif
+        path->set_num_in_path_ranges_if_lower((*matched_range)->get_num_to_end(path->get_value(fertilizer)));
+
+        // water to light
+        path->set_value(light, m_maps[water]->apply_map(path->get_value(water), matched_range));
+#ifdef DEBUG_DAY_5
+        cout << "  water " << path->get_value(water) << " corresponds to light " << path->get_value(light) << endl;
+        cout << "   water-to-light range goes from " <<  (*matched_range)->get_source_start() << " to " << (*matched_range)->get_source_end() << endl;
+        cout << "   There are " << (*matched_range)->get_num_to_end(path->get_value(water)) << " water values to the end" << endl;
+#endif
+        path->set_num_in_path_ranges_if_lower((*matched_range)->get_num_to_end(path->get_value(water)));
+        
+        // light to temperature
+        path->set_value(temperature, m_maps[light]->apply_map(path->get_value(light), matched_range));
+#ifdef DEBUG_DAY_5
+        cout << "  light " << path->get_value(light) << " corresponds to temperature " << path->get_value(temperature) << endl;
+        cout << "   light-to-temperature range goes from " <<  (*matched_range)->get_source_start() << " to " << (*matched_range)->get_source_end() << endl;
+        cout << "   There are " << (*matched_range)->get_num_to_end(path->get_value(light)) << " light values to the end" << endl;
+#endif
+        path->set_num_in_path_ranges_if_lower((*matched_range)->get_num_to_end(path->get_value(light)));
+        
+        // temperature to humidity
+        path->set_value(humidity, m_maps[temperature]->apply_map(path->get_value(temperature), matched_range));
+#ifdef DEBUG_DAY_5
+        cout << "  temperature " << path->get_value(temperature) << " corresponds to humidity " << path->get_value(humidity) << endl;
+        cout << "   temperature-to-humidity range goes from " <<  (*matched_range)->get_source_start() << " to " << (*matched_range)->get_source_end() << endl;
+        cout << "   There are " << (*matched_range)->get_num_to_end(path->get_value(temperature)) << " temperature values to the end" << endl;
+#endif
+        path->set_num_in_path_ranges_if_lower((*matched_range)->get_num_to_end(path->get_value(temperature)));
+        
+        // humidity to location
+        path->set_value(location, m_maps[humidity]->apply_map(path->get_value(humidity), matched_range));
+#ifdef DEBUG_DAY_5
+        cout << "  humidity " << path->get_value(humidity) << " corresponds to location " << path->get_value(location) << endl;
+        cout << "   humidity-to-location range goes from " <<  (*matched_range)->get_source_start() << " to " << (*matched_range)->get_source_end() << endl;
+        cout << "   There are " << (*matched_range)->get_num_to_end(path->get_value(humidity)) << " humidity values to the end" << endl;
+#endif
+        path->set_num_in_path_ranges_if_lower((*matched_range)->get_num_to_end(path->get_value(humidity)));
+
+#ifdef DEBUG_DAY_5
+        cout << "  Smalles values to the end is " << path->get_num_in_path_ranges() << endl;
+#endif
 
 #ifdef DEBUG_DAY_5
         cout << "Applying path for seed " << path->get_value(seed) << endl;
@@ -430,26 +507,35 @@ string AocDay5::part2(string filename, vector<string> extra_args)
     almanac.create_maps(data);
     
     long long int closest_location = LLONG_MAX;
-/*
-    for (int i=0; i<seeds.size(); i++)
+
+    for (int i=0; i<seed_ranges.size(); i++)
     {
-        Path path;
-        path.set_value(seed, seeds[i]);
-        almanac.apply_path_seed_to_location(&path);
+#ifdef DEBUG_DAY_5
+        cout << "Working through seed range " << seed_ranges[i].first << " - " << seed_ranges[i].second << endl;
+#endif
+        long long int seed_value = seed_ranges[i].first;
+        while (seed_value <= seed_ranges[i].second)
+        {
+#ifdef DEBUG_DAY_5
+            cout << " Checking seed " << seed_value << endl;
+#endif
+            Path path;
+            path.set_value(seed, seed_value);
+            almanac.apply_path_seed_to_location(&path);
         
 #ifdef DEBUG_DAY_5
-        cout << "Seed " << path.get_value(seed) << " corresponds to location " << path.get_value(location) << endl;
+            cout << " Seed " << path.get_value(seed) << " corresponds to location " << path.get_value(location) << endl;
 #endif
-        if (path.get_value(location) < closest_location)
-        {
-            closest_location = path.get_value(location);
+            if (path.get_value(location) < closest_location)
+            {
+                closest_location = path.get_value(location);
 #ifdef DEBUG_DAY_5
-            cout << " New closes location " << closest_location << endl;
+                cout << "  New closes location " << closest_location << endl;
 #endif
+            }            
+            seed_value += (path.get_num_in_path_ranges() + (long long int)1);
         }
     }
-*/
-
     ostringstream out;
     out << closest_location;
     return out.str();

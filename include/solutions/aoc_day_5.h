@@ -25,11 +25,14 @@ namespace Day5
     {
         private:
             long long int m_values[NUM_CATEGORIES];
+            long long int m_num_in_path_ranges;
         public:
             Path();
             ~Path();
             long long int get_value(Category category);
             void set_value(Category category, long long int value);
+            long long int get_num_in_path_ranges();
+            void set_num_in_path_ranges_if_lower(long long int num);
     };
     
     class Range
@@ -62,7 +65,7 @@ namespace Day5
             ~CategoryMap();
             void add_range(Range * range);
             vector<Range *> get_ranges();
-            long long int apply_map(long long int value);
+            long long int apply_map(long long int value, Range ** matched_range = NULL);
             void add_no_change_ranges();
     };
     
