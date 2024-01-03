@@ -29,7 +29,7 @@ namespace Day7
     {
         int num_unique = 0;
         char cards[5];
-        char count[5];
+        int count[5];
         int num_jokers = 0;
         
         for (int i=0; i<HAND_LENGTH; i++)
@@ -376,6 +376,20 @@ string AocDay7::part1(string filename, vector<string> extra_args)
     Hands hands;
     
     hands.init_hands(data);
+    
+    hands.assign_ranks();
+    
+    ostringstream out;
+    out << hands.get_total_winnings();
+    return out.str();
+}
+
+string AocDay7::part2(string filename, vector<string> extra_args)
+{
+    vector<vector<string>> data = read_input(filename);
+    Hands hands;
+    
+    hands.init_hands(data, true);
     
     hands.assign_ranks();
     
