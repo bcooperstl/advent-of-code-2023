@@ -18,6 +18,7 @@ namespace Day7
         m_bid = bid;
         m_rank = 0;
         assign_type();
+        assign_ranked_hand();
     }
     
     Hand::~Hand()
@@ -186,23 +187,49 @@ namespace Day7
                 case '2':
                     m_ranked_hand[i] = two;
                     break;
+                default:
+                    cerr << "INVALID CARD RANK " << m_hand[i] << endl;
+                    break;
             }
         }
     }
         
     bool Hand::operator < (const Hand & other)
     {
+#ifdef DEBUG_DAY_7_COMPARE
+        cout << "Comparing " << m_hand << " < " << other.m_hand << endl;
+#endif
+
         if (m_type != other.m_type)
         {
+#ifdef DEBUG_DAY_7_COMPARE
+            cout << " Types " << m_type << " and " << other.m_type << " not equal. returning " << (m_type < other.m_type) << endl;
+#endif
             return (m_type < other.m_type);
         }
+        
+#ifdef DEBUG_DAY_7_COMPARE
+        cout << " Types " << m_type << " and " << other.m_type << " equal." << endl;
+#endif
+        
         for (int i=0; i<HAND_LENGTH; i++)
         {
             if (m_ranked_hand[i] != other.m_ranked_hand[i])
             {
+#ifdef DEBUG_DAY_7_COMPARE
+                cout << " Position " << i << " CardRanks " << m_ranked_hand[i] << " and " << other.m_ranked_hand[i] << " not equal. returning " << (m_ranked_hand[i] < other.m_ranked_hand[i]) << endl;
+#endif
                 return (m_ranked_hand[i] < other.m_ranked_hand[i]);
             }
+#ifdef DEBUG_DAY_7_COMPARE
+            cout << " Position " << i << " CardRanks " << m_ranked_hand[i] << " and " << other.m_ranked_hand[i] << " equal." << endl;
+#endif
         }
+
+#ifdef DEBUG_DAY_7_COMPARE
+        cout << " Got to end. returning false" << endl;
+#endif
+        
         return false; // equal at this point, so return false
     }
     
