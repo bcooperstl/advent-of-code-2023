@@ -113,10 +113,10 @@ namespace Day7
         // check for one pair
         else if (num_unique == 4)
         {
-            if ((count[0] == 2 && count[1] == 1 && count[1] == 1 && count[2] == 1) ||
-                (count[0] == 1 && count[1] == 2 && count[1] == 1 && count[2] == 1) ||
-                (count[0] == 1 && count[1] == 1 && count[1] == 2 && count[2] == 1) ||
-                (count[0] == 1 && count[1] == 1 && count[1] == 1 && count[2] == 2))
+            if ((count[0] == 2 && count[1] == 1 && count[2] == 1 && count[3] == 1) ||
+                (count[0] == 1 && count[1] == 2 && count[2] == 1 && count[3] == 1) ||
+                (count[0] == 1 && count[1] == 1 && count[2] == 2 && count[3] == 1) ||
+                (count[0] == 1 && count[1] == 1 && count[2] == 1 && count[3] == 2))
             {
                 m_type = one_pair;
 #ifdef DEBUG_DAY_7
