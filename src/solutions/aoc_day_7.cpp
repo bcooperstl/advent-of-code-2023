@@ -44,7 +44,7 @@ namespace Day7
             }
             if (new_unique)
             {
-                cards[num_unique] == m_hand[i];
+                cards[num_unique] = m_hand[i];
                 count[num_unique] = 1;
                 num_unique++;
             }
