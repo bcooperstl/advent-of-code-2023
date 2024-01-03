@@ -86,18 +86,18 @@ namespace Day7
         // check for three of a kind or two pair
         else if (num_unique == 3)
         {
-            if ((count[0] == 3 || count[1] == 1 || count[2] == 1) ||
-                (count[0] == 1 || count[1] == 3 || count[2] == 1) ||
-                (count[0] == 1 || count[1] == 1 || count[2] == 3))
+            if ((count[0] == 3 && count[1] == 1 && count[2] == 1) ||
+                (count[0] == 1 && count[1] == 3 && count[2] == 1) ||
+                (count[0] == 1 && count[1] == 1 && count[2] == 3))
             {
                 m_type = three_of_a_kind;
 #ifdef DEBUG_DAY_7
                 cout << "Hand " << m_hand << " is three-of-a-kind" << endl;
 #endif
             }
-            else if ((count[0] == 2 || count[1] == 2 || count[2] == 1) ||
-                     (count[0] == 2 || count[1] == 1 || count[2] == 2) ||
-                     (count[0] == 1 || count[1] == 2 || count[2] == 2))
+            else if ((count[0] == 2 && count[1] == 2 && count[2] == 1) ||
+                     (count[0] == 2 && count[1] == 1 && count[2] == 2) ||
+                     (count[0] == 1 && count[1] == 2 && count[2] == 2))
             {
                 m_type = two_pair;
 #ifdef DEBUG_DAY_7
@@ -112,10 +112,10 @@ namespace Day7
         // check for one pair
         else if (num_unique == 4)
         {
-            if ((count[0] == 2 || count[1] == 1 || count[1] == 1 || count[2] == 1) ||
-                (count[0] == 1 || count[1] == 2 || count[1] == 1 || count[2] == 1) ||
-                (count[0] == 1 || count[1] == 1 || count[1] == 2 || count[2] == 1) ||
-                (count[0] == 1 || count[1] == 1 || count[1] == 1 || count[2] == 2))
+            if ((count[0] == 2 && count[1] == 1 && count[1] == 1 && count[2] == 1) ||
+                (count[0] == 1 && count[1] == 2 && count[1] == 1 && count[2] == 1) ||
+                (count[0] == 1 && count[1] == 1 && count[1] == 2 && count[2] == 1) ||
+                (count[0] == 1 && count[1] == 1 && count[1] == 1 && count[2] == 2))
             {
                 m_type = one_pair;
 #ifdef DEBUG_DAY_7
