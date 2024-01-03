@@ -12,44 +12,88 @@ using namespace Day7;
 
 namespace Day7
 {
-    Hand::Hand(string hand, long int bid)
+    Hand::Hand(string hand, long int bid, bool use_jokers)
     {
         m_hand = hand;
         m_bid = bid;
         m_rank = 0;
-        assign_type();
-        assign_ranked_hand();
+        assign_type(use_jokers);
+        assign_ranked_hand(use_jokers);
     }
     
     Hand::~Hand()
     {
     }
     
-    void Hand::assign_type()
+    void Hand::assign_type(bool use_jokers)
     {
         int num_unique = 0;
         char cards[5];
         char count[5];
+        int num_jokers = 0;
         
         for (int i=0; i<HAND_LENGTH; i++)
         {
-            bool new_unique = true;
-            for (int j=0; j<num_unique; j++)
+            if (use_jokers == true && m_hand[i] == 'J')
             {
-                if (cards[j] == m_hand[i])
+                num_jokers++;
+            }
+            else
+            {
+                bool new_unique = true;
+                for (int j=0; j<num_unique; j++)
                 {
-                    new_unique = false;
-                    count[j]++;
-                    break;
+                    if (cards[j] == m_hand[i])
+                    {
+                        new_unique = false;
+                        count[j]++;
+                        break;
+                    }
+                }
+                if (new_unique)
+                {
+                    cards[num_unique] = m_hand[i];
+                    count[num_unique] = 1;
+                    num_unique++;
                 }
             }
-            if (new_unique)
-            {
-                cards[num_unique] = m_hand[i];
-                count[num_unique] = 1;
-                num_unique++;
-            }
         }
+        
+        // assign the jokers to the highest-valued count
+        if (use_jokers == true && num_jokers > 0)
+        {
+#ifdef DEBUG_DAY_7
+            cout << "Hand " << m_hand << " is has " << num_jokers << " jokers" << endl;
+#endif
+            // special case for 5 jokers
+            if (num_jokers == 5)
+            {
+#ifdef DEBUG_DAY_7
+                cout << " hard-coding as five of a kind" << endl;
+#endif
+                num_unique = 1;
+                cards[0] = 'J';
+                count[0] = 5;
+            }
+            else
+            {
+                int high_count_idx = 0;
+                for (int i=1; i<num_unique; i++)
+                {
+                    if (count[i] > count[high_count_idx])
+                    {
+                        high_count_idx = i;
+                    }
+                }
+#ifdef DEBUG_DAY_7
+                cout << " adding " << num_jokers << " to the " << count[high_count_idx] << " " << cards[high_count_idx] << "'s resulting in ";
+#endif
+                count[high_count_idx]+=num_jokers;
+#ifdef DEBUG_DAY_7
+                cout << count[high_count_idx] << endl;;
+#endif
+            }
+        }            
         
         // check for five of a kind
         if (num_unique == 1 && count[0] == 5)
@@ -142,7 +186,7 @@ namespace Day7
         }
     }
     
-    void Hand::assign_ranked_hand()
+    void Hand::assign_ranked_hand(bool use_jokers)
     {
         for (int i=0; i<HAND_LENGTH; i++)
         {
@@ -158,7 +202,7 @@ namespace Day7
                     m_ranked_hand[i] = queen;
                     break;
                 case 'J':
-                    m_ranked_hand[i] = jack;
+                    m_ranked_hand[i] = (use_jokers ? joker : jack);
                     break;
                 case 'T':
                     m_ranked_hand[i] = ten;
@@ -262,11 +306,11 @@ namespace Day7
     {
     }
     
-    void Hands::init_hands(vector<vector<string>> input_data)
+    void Hands::init_hands(vector<vector<string>> input_data, bool use_jokers)
     {
         for (int i=0; i<input_data.size(); i++)
         {
-            Hand hand(input_data[i][0], strtol(input_data[i][1].c_str(), NULL, 10));
+            Hand hand(input_data[i][0], strtol(input_data[i][1].c_str(), NULL, 10), use_jokers);
             m_hands.push_back(hand);
         }
         

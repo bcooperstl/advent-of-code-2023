@@ -34,7 +34,8 @@ namespace Day7
         five = 9,
         four = 10,
         three = 11,
-        two = 12
+        two = 12,
+        joker = 13
     };
     
     
@@ -46,10 +47,10 @@ namespace Day7
             HandType m_type;
             long int m_bid;
             long int m_rank;
-            void assign_type();
-            void assign_ranked_hand();
+            void assign_type(bool use_jokers=false);
+            void assign_ranked_hand(bool use_jokers=false);
         public:
-            Hand(string hand, long int bid);
+            Hand(string hand, long int bid, bool use_jokers=false);
             ~Hand();
             bool operator < (const Hand & other);
             HandType get_type();
@@ -66,7 +67,7 @@ namespace Day7
         public:
             Hands();
             ~Hands();
-            void init_hands(vector<vector<string>> input_data);
+            void init_hands(vector<vector<string>> input_data, bool use_jokers=false);
             void assign_ranks();
             long int get_total_winnings();
     };
