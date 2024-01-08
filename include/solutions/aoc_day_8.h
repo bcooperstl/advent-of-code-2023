@@ -47,7 +47,6 @@ namespace Day8
             int m_instructions[DAY_8_MAX_INSTRUCTIONS];
             int m_num_instructions;
             int m_current_instruction;
-            Node * m_current_node;
             Nodes m_nodes;
         public:
             Network();

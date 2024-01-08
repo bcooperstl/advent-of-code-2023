@@ -105,7 +105,6 @@ namespace Day8
     {
         m_num_instructions = 0;
         m_current_instruction = 0;
-        m_current_node = NULL;
     }
     
     Network::~Network()
@@ -141,7 +140,6 @@ namespace Day8
     void Network::reset_network()
     {
         m_current_instruction = 0;
-        m_current_node = NULL;
     }
     
     int Network::get_count_to_move(string start, string end)
@@ -149,23 +147,23 @@ namespace Day8
 #ifdef DEBUG_DAY_8
         cout << "Moving from " << start << " to " << end << endl;
 #endif
-        m_current_node = m_nodes.get_node(start);
+        Node * current_node = m_nodes.get_node(start);
         Node * target_node = m_nodes.get_node(end);
         
         int move_count = 0;
-        while (m_current_node != target_node)
+        while (current_node != target_node)
         {
             move_count++;
-            Node * next_node = m_current_node->get_node(m_instructions[m_current_instruction]);
+            Node * next_node = current_node->get_node(m_instructions[m_current_instruction]);
 #ifdef DEBUG_DAY_8
             string dir_str = m_instructions[m_current_instruction] == DAY_8_LEFT ? "left" : "right";
             cout << " Move " << move_count 
                  << " is from instruction " << m_current_instruction
                  << " going " << dir_str 
-                 << " from node " << m_current_node->get_name() 
+                 << " from node " << current_node->get_name() 
                  << " to node " << next_node->get_name() << endl;
 #endif
-            m_current_node = next_node;
+            current_node = next_node;
             m_current_instruction = ((m_current_instruction + 1) % m_num_instructions);
         }
 #ifdef DEBUG_DAY_8
