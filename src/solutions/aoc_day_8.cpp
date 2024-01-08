@@ -208,6 +208,7 @@ namespace Day8
         return true;
     }
 
+    // TODO: Need to find LCM of cycles for ghosts getting to ending nodes
     int Network::get_count_to_move_ghosts()
     {
         vector<Node *> current_nodes = m_nodes.get_start_nodes();
@@ -241,6 +242,10 @@ namespace Day8
                      << " from node " << current_nodes[i]->get_name() 
                      << " to node " << next_node->get_name() << endl;
 #endif
+                if (next_node->is_end_node())
+                {
+                    cout << "Ghost " << i << " reached end node " << next_node->get_name() << " at move " << move_count << endl;
+                }
                 next_nodes.push_back(next_node);
             }
             current_nodes = next_nodes;
