@@ -43,6 +43,16 @@ namespace Day8
         m_nodes[direction] = node;
     }
     
+    bool Node::is_start_node()
+    {
+        return (m_name[2] == 'A');
+    }
+    
+    bool Node::is_end_node()
+    {
+        return (m_name[2] == 'Z');
+    }
+    
     Nodes::Nodes()
     {
         m_num_nodes = 0;
@@ -99,6 +109,19 @@ namespace Day8
                  << " and right node " << source->get_node(DAY_8_RIGHT)->get_name() << endl;
 #endif
         }
+    }
+    
+    vector<Node *> Nodes::get_start_nodes()
+    {
+        vector<Node *> start_nodes;
+        for (int i=0; i<m_num_nodes; i++)
+        {
+            if (m_nodes[i].is_start_node())
+            {
+                start_nodes.push_back(&(m_nodes[i]));
+            }
+        }
+        return start_nodes;
     }
     
     Network::Network()
@@ -172,6 +195,63 @@ namespace Day8
 
         return move_count;
     }
+    
+    bool Network::all_ghosts_at_end(vector<Node *> ghost_nodes)
+    {
+        for (int i=0; i<ghost_nodes.size(); i++)
+        {
+            if (!ghost_nodes[i]->is_end_node())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    int Network::get_count_to_move_ghosts()
+    {
+        vector<Node *> current_nodes = m_nodes.get_start_nodes();
+        
+#ifdef DEBUG_DAY_8
+        cout << "There are " << current_nodes.size() << " start nodes:";
+        for (int i=0; i<current_nodes.size(); i++)
+        {
+            cout << " " << current_nodes[i]->get_name();
+        }
+        cout << endl;
+#endif
+        int move_count = 0;
+        while (!all_ghosts_at_end(current_nodes))
+        {
+            move_count++;
+            vector<Node *> next_nodes;
+            
+#ifdef DEBUG_DAY_8
+            string dir_str = m_instructions[m_current_instruction] == DAY_8_LEFT ? "left" : "right";
+            cout << " Move " << move_count 
+                 << " is from instruction " << m_current_instruction
+                 << " going " << dir_str << ":" << endl; 
+                    
+#endif
+            for (int i=0; i<current_nodes.size(); i++)
+            {
+                Node * next_node = current_nodes[i]->get_node(m_instructions[m_current_instruction]);
+#ifdef DEBUG_DAY_8
+                cout << "  Ghost " << i   
+                     << " from node " << current_nodes[i]->get_name() 
+                     << " to node " << next_node->get_name() << endl;
+#endif
+                next_nodes.push_back(next_node);
+            }
+            current_nodes = next_nodes;
+            m_current_instruction = ((m_current_instruction + 1) % m_num_instructions);
+        }
+#ifdef DEBUG_DAY_8
+        cout << "End nodes reached after " << move_count << " moves" << endl;
+#endif
+
+        return move_count;
+    }    
 }
 
 AocDay8::AocDay8():AocDay(8)
@@ -203,5 +283,17 @@ string AocDay8::part1(string filename, vector<string> extra_args)
     
     ostringstream out;
     out << network.get_count_to_move("AAA", "ZZZ");
+    return out.str();
+}
+
+string AocDay8::part2(string filename, vector<string> extra_args)
+{
+    vector<vector<string>> data = read_input(filename);
+    Network network;
+    
+    network.init_network(data);
+    
+    ostringstream out;
+    out << network.get_count_to_move_ghosts();
     return out.str();
 }

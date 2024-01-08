@@ -27,6 +27,8 @@ namespace Day8
             void set_name(string name);
             Node * get_node(int direction);
             void set_node(int direction, Node * child);
+            bool is_start_node();
+            bool is_end_node();
     };
     
     class Nodes
@@ -38,6 +40,7 @@ namespace Day8
             Nodes();
             ~Nodes();
             void init_nodes(vector<vector<string>> input_data);
+            vector<Node *> get_start_nodes();
             Node * get_node(string name);
     };
 
@@ -48,12 +51,14 @@ namespace Day8
             int m_num_instructions;
             int m_current_instruction;
             Nodes m_nodes;
+            bool all_ghosts_at_end(vector<Node *> ghost_nodes);
         public:
             Network();
             ~Network();
             void init_network(vector<vector<string>> input_data);
             void reset_network();
             int get_count_to_move(string start, string end);
+            int get_count_to_move_ghosts();
     };
     
             
@@ -69,7 +74,7 @@ class AocDay8 : public AocDay
         AocDay8();
         ~AocDay8();
         string part1(string filename, vector<string> extra_args);
-        //string part2(string filename, vector<string> extra_args);
+        string part2(string filename, vector<string> extra_args);
 };
 
 #endif
