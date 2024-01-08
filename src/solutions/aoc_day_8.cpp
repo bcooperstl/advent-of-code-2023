@@ -156,7 +156,7 @@ namespace Day8
         while (m_current_node != target_node)
         {
             move_count++;
-            Node * next_node = target_node->get_node(m_instructions[m_current_instruction]);
+            Node * next_node = m_current_node->get_node(m_instructions[m_current_instruction]);
 #ifdef DEBUG_DAY_8
             string dir_str = m_instructions[m_current_instruction] == DAY_8_LEFT ? "left" : "right";
             cout << " Move " << move_count 
