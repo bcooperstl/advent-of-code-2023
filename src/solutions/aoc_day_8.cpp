@@ -3,9 +3,11 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <cstdint>
 
 #include "aoc_day_8.h"
 #include "file_utils.h"
+#include "math_utils.h"
 
 using namespace std;
 using namespace Day8;
@@ -208,54 +210,98 @@ namespace Day8
         return true;
     }
 
-    // TODO: Need to find LCM of cycles for ghosts getting to ending nodes
-    int Network::get_count_to_move_ghosts()
+    //TODO: This didn't need Chinese Remainder Theorm, and that doesn't work. I need the LCM of the values. That's it.
+    
+    int64_t Network::get_count_to_move_ghosts()
     {
         vector<Node *> current_nodes = m_nodes.get_start_nodes();
+        int64_t moduluses[64]; 
+        int64_t values[64];
+        
+        /*
+            For each ghost:
+              the value for the Chinese Remainder theorm will be the move count when the ghost first reaches an end
+              the modulus will be the move count the second time minus the move count the first time
+        */
         
 #ifdef DEBUG_DAY_8
-        cout << "There are " << current_nodes.size() << " start nodes:";
+        cout << "There are " << current_nodes.size() << " start ghosts:";
         for (int i=0; i<current_nodes.size(); i++)
         {
             cout << " " << current_nodes[i]->get_name();
         }
         cout << endl;
 #endif
+
+        int num_ghosts = current_nodes.size();
+        int moduluses_set = 0;
+        int values_set = 0;
+
+        for (int i=0; i<num_ghosts; i++)
+        {
+            moduluses[i] = 0;
+            values[i] = 0;
+        }
+        
         int move_count = 0;
-        while (!all_ghosts_at_end(current_nodes))
+        while (!((moduluses_set == num_ghosts) && (values_set == num_ghosts)))
         {
             move_count++;
             vector<Node *> next_nodes;
             
-#ifdef DEBUG_DAY_8
-            string dir_str = m_instructions[m_current_instruction] == DAY_8_LEFT ? "left" : "right";
-            cout << " Move " << move_count 
-                 << " is from instruction " << m_current_instruction
-                 << " going " << dir_str << ":" << endl; 
-                    
-#endif
             for (int i=0; i<current_nodes.size(); i++)
             {
                 Node * next_node = current_nodes[i]->get_node(m_instructions[m_current_instruction]);
-#ifdef DEBUG_DAY_8
-                cout << "  Ghost " << i   
-                     << " from node " << current_nodes[i]->get_name() 
-                     << " to node " << next_node->get_name() << endl;
-#endif
                 if (next_node->is_end_node())
                 {
+#ifdef DEBUG_DAY_8
                     cout << "Ghost " << i << " reached end node " << next_node->get_name() << " at move " << move_count << endl;
+#endif
+                    // first check the value
+                    if (values[i] == 0)
+                    {
+                        values[i] = move_count;
+                        values_set++;
+#ifdef DEBUG_DAY_8
+                        cout << " Value for Ghost " << i << " CRT set to " << values[i] << endl;
+#endif
+                    }
+                    else if (moduluses[i] == 0)
+                    {
+                        moduluses[i] = move_count - values[i];
+                        moduluses_set++;
+#ifdef DEBUG_DAY_8
+                        cout << " Modulus for Ghost " << i << " CRT set to " << move_count << "-" << values[i] << "=" << moduluses[i] << endl;
+#endif
+                    }
+                    else
+                    {
+#ifdef DEBUG_DAY_8
+                        cout << " Modulus and Value already set for Ghost " << i << " CRT " << endl;
+#endif
+                    }
+                
                 }
                 next_nodes.push_back(next_node);
             }
             current_nodes = next_nodes;
             m_current_instruction = ((m_current_instruction + 1) % m_num_instructions);
         }
+
+        for (int i=0; i<num_ghosts; i++)
+        {
+            if (moduluses[i] == values[i])
+            {
+                values[i] = 0;
+            }
+        }
+
+
 #ifdef DEBUG_DAY_8
-        cout << "End nodes reached after " << move_count << " moves" << endl;
+        cout << "Ready to run Chinese Remainder Theorem after " << move_count << " moves" << endl;
 #endif
 
-        return move_count;
+        return MathUtils::chinese_remainder_theorem(num_ghosts, values, moduluses);;
     }    
 }
 

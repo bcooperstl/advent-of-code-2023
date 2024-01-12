@@ -2,6 +2,7 @@
 #define __AOC_DAY_8__
 
 #include <map>
+#include <cstdint>
 
 #include "aoc_day.h"
 
@@ -58,7 +59,7 @@ namespace Day8
             void init_network(vector<vector<string>> input_data);
             void reset_network();
             int get_count_to_move(string start, string end);
-            int get_count_to_move_ghosts();
+            int64_t get_count_to_move_ghosts();
     };
     
             
