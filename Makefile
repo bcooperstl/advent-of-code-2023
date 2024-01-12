@@ -26,10 +26,16 @@ build/runner/file_utils.o: src/runner/file_utils.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/runner/file_utils.o -c src/runner/file_utils.cpp
 
+build/runner/math_utils.o: src/runner/math_utils.cpp  \
+	include/runner/math_utils.h \
+	include/common/constants.h
+	g++ ${CPPFLAGS} -o build/runner/math_utils.o -c src/runner/math_utils.cpp
+
 bin/lib/librunner.a: build/runner/aoc_test.o  \
 	build/runner/aoc_tests.o  \
-	build/runner/file_utils.o
-	ar rcs bin/lib/librunner.a build/runner/aoc_test.o build/runner/aoc_tests.o build/runner/file_utils.o
+	build/runner/file_utils.o \
+	build/runner/math_utils.o
+	ar rcs bin/lib/librunner.a build/runner/aoc_test.o build/runner/aoc_tests.o build/runner/file_utils.o build/runner/math_utils.o
 
 # Screen libary - contains the screen and screen overlay functionality for game-of-life like problems
 build/screen/screen.o: src/screen/screen.cpp  \
@@ -137,6 +143,7 @@ clean:
 	rm -f build/runner/aoc_test.o  \
 	build/runner/aoc_tests.o  \
 	build/runner/file_utils.o  \
+	build/runner/math_utils.o  \
 	build/screen/screen.o  \
 	build/screen/overlay.o  \
 	build/solutions/aoc_day.o  \
@@ -158,6 +165,7 @@ clean:
 all: build/runner/aoc_test.o  \
 	build/runner/aoc_tests.o  \
 	build/runner/file_utils.o  \
+	build/runner/math_utils.o  \
 	build/screen/screen.o  \
 	build/screen/overlay.o  \
 	build/solutions/aoc_day.o  \
