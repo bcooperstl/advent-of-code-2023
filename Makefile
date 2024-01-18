@@ -2,7 +2,7 @@ DEBUG=
 #Uncomment the below line to dispaly the runner debug
 #DEBUG+= -DDEBUG_RUNNER
 #Template for other debug flags to be added later
-DEBUG+= -DDEBUG_DAY_7
+DEBUG+= -DDEBUG_DAY_8
 
 #If adding another include directory, be sure to add it here
 CPPFLAGS=-g ${DEBUG} -Iinclude/common -Iinclude/runner -Iinclude/screen -Iinclude/solutions
@@ -26,10 +26,16 @@ build/runner/file_utils.o: src/runner/file_utils.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/runner/file_utils.o -c src/runner/file_utils.cpp
 
+build/runner/math_utils.o: src/runner/math_utils.cpp  \
+	include/runner/math_utils.h \
+	include/common/constants.h
+	g++ ${CPPFLAGS} -o build/runner/math_utils.o -c src/runner/math_utils.cpp
+
 bin/lib/librunner.a: build/runner/aoc_test.o  \
 	build/runner/aoc_tests.o  \
-	build/runner/file_utils.o
-	ar rcs bin/lib/librunner.a build/runner/aoc_test.o build/runner/aoc_tests.o build/runner/file_utils.o
+	build/runner/file_utils.o \
+	build/runner/math_utils.o
+	ar rcs bin/lib/librunner.a build/runner/aoc_test.o build/runner/aoc_tests.o build/runner/file_utils.o build/runner/math_utils.o
 
 # Screen libary - contains the screen and screen overlay functionality for game-of-life like problems
 build/screen/screen.o: src/screen/screen.cpp  \
@@ -100,6 +106,12 @@ build/solutions/aoc_day_7.o: src/solutions/aoc_day_7.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/solutions/aoc_day_7.o -c src/solutions/aoc_day_7.cpp
 
+build/solutions/aoc_day_8.o: src/solutions/aoc_day_8.cpp  \
+	include/solutions/aoc_day_8.h \
+	include/solutions/aoc_day.h \
+	include/common/constants.h
+	g++ ${CPPFLAGS} -o build/solutions/aoc_day_8.o -c src/solutions/aoc_day_8.cpp
+
 bin/lib/libsolutions.a: build/solutions/aoc_day.o  \
 	build/solutions/aoc_day_1.o \
 	build/solutions/aoc_day_2.o \
@@ -108,6 +120,7 @@ bin/lib/libsolutions.a: build/solutions/aoc_day.o  \
 	build/solutions/aoc_day_5.o \
 	build/solutions/aoc_day_6.o \
 	build/solutions/aoc_day_7.o \
+	build/solutions/aoc_day_8.o \
 	build/solutions/aoc_days.o
 	ar rcs bin/lib/libsolutions.a $^
 
@@ -130,6 +143,7 @@ clean:
 	rm -f build/runner/aoc_test.o  \
 	build/runner/aoc_tests.o  \
 	build/runner/file_utils.o  \
+	build/runner/math_utils.o  \
 	build/screen/screen.o  \
 	build/screen/overlay.o  \
 	build/solutions/aoc_day.o  \
@@ -140,6 +154,7 @@ clean:
 	build/solutions/aoc_day_5.o \
 	build/solutions/aoc_day_6.o \
 	build/solutions/aoc_day_7.o \
+	build/solutions/aoc_day_8.o \
 	build/solutions/aoc_days.o  \
 	build/aoc.o  \
 	bin/lib/librunner.a  \
@@ -150,6 +165,7 @@ clean:
 all: build/runner/aoc_test.o  \
 	build/runner/aoc_tests.o  \
 	build/runner/file_utils.o  \
+	build/runner/math_utils.o  \
 	build/screen/screen.o  \
 	build/screen/overlay.o  \
 	build/solutions/aoc_day.o  \
@@ -160,6 +176,7 @@ all: build/runner/aoc_test.o  \
 	build/solutions/aoc_day_5.o \
 	build/solutions/aoc_day_6.o \
 	build/solutions/aoc_day_7.o \
+	build/solutions/aoc_day_8.o \
 	build/solutions/aoc_days.o  \
 	build/aoc.o  \
 	bin/lib/librunner.a  \
