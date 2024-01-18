@@ -215,7 +215,6 @@ namespace Day8
     int64_t Network::get_count_to_move_ghosts()
     {
         vector<Node *> current_nodes = m_nodes.get_start_nodes();
-        int64_t moduluses[64]; 
         int64_t values[64];
         
         /*
@@ -234,17 +233,15 @@ namespace Day8
 #endif
 
         int num_ghosts = current_nodes.size();
-        int moduluses_set = 0;
         int values_set = 0;
 
         for (int i=0; i<num_ghosts; i++)
         {
-            moduluses[i] = 0;
             values[i] = 0;
         }
         
         int move_count = 0;
-        while (!((moduluses_set == num_ghosts) && (values_set == num_ghosts)))
+        while (values_set != num_ghosts)
         {
             move_count++;
             vector<Node *> next_nodes;
@@ -266,18 +263,10 @@ namespace Day8
                         cout << " Value for Ghost " << i << " CRT set to " << values[i] << endl;
 #endif
                     }
-                    else if (moduluses[i] == 0)
-                    {
-                        moduluses[i] = move_count - values[i];
-                        moduluses_set++;
-#ifdef DEBUG_DAY_8
-                        cout << " Modulus for Ghost " << i << " CRT set to " << move_count << "-" << values[i] << "=" << moduluses[i] << endl;
-#endif
-                    }
                     else
                     {
 #ifdef DEBUG_DAY_8
-                        cout << " Modulus and Value already set for Ghost " << i << " CRT " << endl;
+                        cout << " Value already set for Ghost " << i << " CRT " << endl;
 #endif
                     }
                 
@@ -288,20 +277,7 @@ namespace Day8
             m_current_instruction = ((m_current_instruction + 1) % m_num_instructions);
         }
 
-        for (int i=0; i<num_ghosts; i++)
-        {
-            if (moduluses[i] == values[i])
-            {
-                values[i] = 0;
-            }
-        }
-
-
-#ifdef DEBUG_DAY_8
-        cout << "Ready to run Chinese Remainder Theorem after " << move_count << " moves" << endl;
-#endif
-
-        return MathUtils::chinese_remainder_theorem(num_ghosts, values, moduluses);;
+        return MathUtils::lcm_multi(num_ghosts, values);
     }    
 }
 
