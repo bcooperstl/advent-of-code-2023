@@ -164,3 +164,44 @@ int64_t MathUtils::chinese_remainder_theorem(int num_equations, int64_t * values
     
     return result;
 }
+
+int64_t MathUtils::gcd(int64_t a, int64_t b)
+{
+    int64_t temp;
+    while (b != 0)
+    {
+        temp = a % b;
+
+        a = b;
+        b = temp;
+    }
+    return a;
+}
+
+int64_t MathUtils::lcm(int64_t a, int64_t b)
+{
+    int64_t gcd_val = gcd(a, b);
+    int64_t lcm_val = a * b / gcd_val;
+    return lcm_val;
+}
+
+int64_t MathUtils::lcm_multi(int num_values, int64_t * values)
+{
+    if (num_values <= 0)
+    {
+        return 0;
+    }
+    
+    if (num_values == 1)
+    {
+        return values[0];
+    }
+    
+    int64_t lcm_val = lcm(values[0], values[1]);
+    
+    for (int i=2; i<num_values; i++)
+    {
+        lcm_val = lcm(lcm_val, values[i]);
+    }
+    return lcm_val;
+}
