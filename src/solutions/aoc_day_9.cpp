@@ -120,6 +120,78 @@ table[write_row][m_num_values-write_row] = table[write_row][m_num_values-write_r
         return work_table[0][m_num_values];
     }
     
+    long ValueHistory::extrapolate_prior()
+    {
+        long work_table[DAY_9_MAX_VALUES+1][DAY_9_MAX_VALUES+1];
+#ifdef DEBUG_DAY_9
+        cout << "Working history for [";
+#endif
+        for (int i=0; i<m_num_values; i++)
+        {
+            work_table[0][i+1] = m_values[i];
+#ifdef DEBUG_DAY_9
+        cout << " " << m_values[i];
+#endif
+        }
+#ifdef DEBUG_DAY_9
+        cout << " ]" << endl;
+#endif
+        
+        bool all_zero = false;
+        int write_row = 1;
+        while (!all_zero)
+        {
+            all_zero = true;
+#ifdef DEBUG_DAY_9
+            cout << "Row " << write_row << " is [";
+#endif
+            for (int i=1; i<=(m_num_values-write_row); i++)
+            {
+                work_table[write_row][i] = work_table[write_row-1][i+1]-work_table[write_row-1][i];
+                if (work_table[write_row][i] != 0)
+                {
+                    all_zero = false;
+                }
+#ifdef DEBUG_DAY_9
+                cout << " " << work_table[write_row][i];
+#endif
+            }
+#ifdef DEBUG_DAY_9
+            cout << " ]" << endl;
+#endif
+            if (!all_zero)
+            {
+                write_row++;
+            }
+        }
+#ifdef DEBUG_DAY_9
+        cout << "All zero row found on write row " << write_row << endl;
+#endif
+
+        work_table[write_row][0] = 0;
+#ifdef DEBUG_DAY_9
+        cout << "Extrapolated 0 to row " << write_row << endl; 
+#endif        
+        write_row--;
+
+        while (write_row >= 0)
+        {
+            
+            work_table[write_row][0] = work_table[write_row][1] - work_table[write_row+1][0];
+#ifdef DEBUG_DAY_9
+            cout << "Extrapolated " << work_table[write_row][1] << " - " 
+                 << work_table[write_row+1][0] << " = " 
+                 << work_table[write_row][0] << " to row " << write_row << endl;
+#endif
+            write_row--;
+        }
+        
+#ifdef DEBUG_DAY_9
+        cout << "Extrapolated value is " << work_table[0][0] << endl;
+#endif
+        return work_table[0][0];
+    }
+
     Values::Values()
     {
     }
@@ -144,6 +216,16 @@ table[write_row][m_num_values-write_row] = table[write_row][m_num_values-write_r
         for (int i=0; i<m_values.size(); i++)
         {
             sum+=m_values[i].extrapolate_next();
+        }
+        return sum;
+    }
+
+    long Values::get_sum_extrapolated_prior_values()
+    {
+        long sum = 0;
+        for (int i=0; i<m_values.size(); i++)
+        {
+            sum+=m_values[i].extrapolate_prior();
         }
         return sum;
     }
@@ -178,5 +260,17 @@ string AocDay9::part1(string filename, vector<string> extra_args)
     
     ostringstream out;
     out << values.get_sum_extrapolated_next_values();
+    return out.str();
+}
+
+string AocDay9::part2(string filename, vector<string> extra_args)
+{
+    vector<vector<long>> data = read_input(filename);
+    Values values;
+    
+    values.init_history(data);
+    
+    ostringstream out;
+    out << values.get_sum_extrapolated_prior_values();
     return out.str();
 }

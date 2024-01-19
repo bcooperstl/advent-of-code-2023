@@ -18,7 +18,7 @@ namespace Day9
             ValueHistory();
             ~ValueHistory();
             long extrapolate_next();
-//            long extrapolate_prior();
+            long extrapolate_prior();
             void load_history(vector<long> input_data);
     };
     
@@ -31,7 +31,7 @@ namespace Day9
             ~Values();
             void init_history(vector<vector<long>> input_data);
             long get_sum_extrapolated_next_values();
-//            long get_sum_extrapolated_prior_values();
+            long get_sum_extrapolated_prior_values();
     };
 }
 
@@ -45,7 +45,7 @@ class AocDay9 : public AocDay
         AocDay9();
         ~AocDay9();
         string part1(string filename, vector<string> extra_args);
-        //string part2(string filename, vector<string> extra_args);
+        string part2(string filename, vector<string> extra_args);
 };
 
 #endif
