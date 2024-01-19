@@ -138,7 +138,7 @@ table[write_row][m_num_values-write_row] = table[write_row][m_num_values-write_r
         }
     }
 
-    long Values::get_sum_extrapolated_values()
+    long Values::get_sum_extrapolated_next_values()
     {
         long sum = 0;
         for (int i=0; i<m_values.size(); i++)
@@ -177,6 +177,6 @@ string AocDay9::part1(string filename, vector<string> extra_args)
     values.init_history(data);
     
     ostringstream out;
-    out << values.get_sum_extrapolated_values();
+    out << values.get_sum_extrapolated_next_values();
     return out.str();
 }

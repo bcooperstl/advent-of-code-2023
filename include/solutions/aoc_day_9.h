@@ -18,6 +18,7 @@ namespace Day9
             ValueHistory();
             ~ValueHistory();
             long extrapolate_next();
+//            long extrapolate_prior();
             void load_history(vector<long> input_data);
     };
     
@@ -29,7 +30,8 @@ namespace Day9
             Values();
             ~Values();
             void init_history(vector<vector<long>> input_data);
-            long get_sum_extrapolated_values();
+            long get_sum_extrapolated_next_values();
+//            long get_sum_extrapolated_prior_values();
     };
 }
 
