@@ -29,6 +29,25 @@ namespace Day9
         m_num_values = input_data.size();
     }
     
+/*
+write_row = 1
+0 3 6 9 12 15
+3 3 3 3 3
+0 0 0 0 0
+table[1][5] = table[1][4] + table[2][4]
+
+write_row = 0
+0 3 6 9 12 15
+3 3 3 3 3 3
+0 0 0 0 0
+table[0][6] = table[0][5] + table[1][5]
+
+table[write_row][m_num_values-write_row] = table[write_row][m_num_values-write_row-1] + table[write_row+1][m_num_values-write_row-1]
+
+
+*/
+
+
     long ValueHistory::extrapolate_next()
     {
         long work_table[DAY_9_MAX_VALUES+1][DAY_9_MAX_VALUES+1];
@@ -47,7 +66,6 @@ namespace Day9
 #endif
         
         bool all_zero = false;
-        int read_row = 0;
         int write_row = 1;
         while (!all_zero)
         {
@@ -57,7 +75,7 @@ namespace Day9
 #endif
             for (int i=0; i<(m_num_values-write_row); i++)
             {
-                work_table[write_row][i] = work_table[read_row][i+1]-work_table[read_row][i];
+                work_table[write_row][i] = work_table[write_row-1][i+1]-work_table[write_row-1][i];
                 if (work_table[write_row][i] != 0)
                 {
                     all_zero = false;
@@ -69,25 +87,31 @@ namespace Day9
 #ifdef DEBUG_DAY_9
             cout << " ]" << endl;
 #endif
-            read_row++;
-            write_row++;
+            if (!all_zero)
+            {
+                write_row++;
+            }
         }
 #ifdef DEBUG_DAY_9
         cout << "All zero row found on write row " << write_row << endl;
 #endif
-        read_row = write_row;
-        write_row = read_row-1;
+
+        work_table[write_row][m_num_values-write_row] = 0;
+#ifdef DEBUG_DAY_9
+        cout << "Extrapolated 0 to row " << write_row << endl; 
+#endif        
+        write_row--;
 
         while (write_row >= 0)
         {
-            work_table[write_row][m_num_values-write_row] = work_table[write_row][m_num_values-write_row-1]+work_table[read_row][m_num_values-write_row-1];
+            
+            work_table[write_row][m_num_values-write_row] = work_table[write_row][m_num_values-write_row-1] + work_table[write_row+1][m_num_values-write_row-1];
 #ifdef DEBUG_DAY_9
             cout << "Extrapolated " << work_table[write_row][m_num_values-write_row-1] << " + " 
-                 << work_table[read_row][m_num_values-write_row-1] << " = " 
-                 << work_table[write_row][m_num_values-write_row] << " to row " << write_row;
+                 << work_table[write_row+1][m_num_values-write_row-1] << " = " 
+                 << work_table[write_row][m_num_values-write_row] << " to row " << write_row << endl;
 #endif
             write_row--;
-            read_row--;
         }
         
 #ifdef DEBUG_DAY_9
