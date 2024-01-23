@@ -26,6 +26,7 @@ namespace Day10
     {
         m_symbol = GROUND;
         m_step_count = NO_STEPS;
+        m_inside = false;
     }
     
     Cell::~Cell()
@@ -152,6 +153,16 @@ namespace Day10
         m_step_count = step_count;
     }
     
+    bool Cell::get_inside()
+    {
+        return m_inside;
+    }
+    
+    void Cell::set_inside(bool inside)
+    {
+        m_inside = inside;
+    }
+    
     Area::Area()
     {
         m_rows = 0;
@@ -228,6 +239,111 @@ namespace Day10
     Cell * Area::get_cell(int row, int col)
     {
         return &(m_map[row][col]);
+    }
+    
+    int Area::get_inside_count()
+    {
+        int num_inside = 0;
+        for (int row=0; row<m_rows; row++)
+        {
+            for (int col=0; col<m_cols; col++)
+            {
+                if (m_map[row][col].get_inside() == true)
+                {
+                    num_inside++;
+                }
+            }
+        }
+        return num_inside;
+    }
+    
+    void Area::replace_start_with_symbol()
+    {
+        int start_row;
+        int start_col;
+        for (int row=0; row<m_area->get_rows(); row++)
+        {
+            for (int col=0; col<m_area->get_cols(); col++)
+            {
+                if (m_area->get_cell(row, col)->is_start())
+                {
+                    start_row = row;
+                    start_col = col;
+                }
+            }
+        }
+        
+        // north south
+        if ((m_map[start_row-1][start_col].is_visited() == true) &&
+            (m_map[start_row-1][start_col].get_step_count() == 1) &&
+            (m_map[start_row+1][start_col].is_visited() == true) &&
+            (m_map[start_row+1][start_col].get_step_count() == 1))
+        {
+            m_map[start_row][start_col].set_symbol(VERTICAL);
+        }
+        // north east
+        else if ((m_map[start_row-1][start_col].is_visited() == true) &&
+            (m_map[start_row-1][start_col].get_step_count() == 1) &&
+            (m_map[start_row][start_col+1].is_visited() == true) &&
+            (m_map[start_row][start_col+1].get_step_count() == 1))
+        {
+            m_map[start_row][start_col].set_symbol(NORTH_EAST);
+        }
+        // north west
+        else if ((m_map[start_row-1][start_col].is_visited() == true) &&
+            (m_map[start_row-1][start_col].get_step_count() == 1) &&
+            (m_map[start_row][start_col-1].is_visited() == true) &&
+            (m_map[start_row][start_col-1].get_step_count() == 1))
+        {
+            m_map[start_row][start_col].set_symbol(NORTH_WEST);
+        }
+        // south east
+        else if ((m_map[start_row+1][start_col].is_visited() == true) &&
+            (m_map[start_row+1][start_col].get_step_count() == 1) &&
+            (m_map[start_row][start_col+1].is_visited() == true) &&
+            (m_map[start_row][start_col+1].get_step_count() == 1))
+        {
+            m_map[start_row][start_col].set_symbol(SOUTH_EAST);
+        }
+        // south west
+        else if ((m_map[start_row+1][start_col].is_visited() == true) &&
+            (m_map[start_row+1][start_col].get_step_count() == 1) &&
+            (m_map[start_row][start_col-1].is_visited() == true) &&
+            (m_map[start_row][start_col-1].get_step_count() == 1))
+        {
+            m_map[start_row][start_col].set_symbol(SOUTH_WEST);
+        }
+        // east west
+        else if ((m_map[start_row][start_col+1].is_visited() == true) &&
+            (m_map[start_row][start_col+1].get_step_count() == 1) &&
+            (m_map[start_row][start_col-1].is_visited() == true) &&
+            (m_map[start_row][start_col-1].get_step_count() == 1))
+        {
+            m_map[start_row][start_col].set_symbol(HORIZONTAL);
+        }
+        else
+        {
+            cerr << "Unable to determine replacement symbol for start" << endl;
+        }
+#ifdef DEBUG_DAY_10
+        cout << "Replaced start symbol at row=" << start_row << " col=" << start_col << " with " << m_map[start_row][start_col].get_symbol() << endl;
+#endif            
+    }
+    
+    void Area::set_inside_outside()
+    {
+        replace_start_with_symbol()
+        // First do the rows left to right
+        for (int row=1; row<(m_rows-1); row++)
+        {
+#ifdef DEBUG_DAY_10
+            cout << "Checking for inside cell on row " << row << endl;
+#endif            
+            int num_crossed = 0;
+            for (int col=1; col<(m_cols-1); col++)
+            {
+                if (m_map[row][col]
+
     }
     
     PathSolver::PathSolver(Area * area)
@@ -351,7 +467,7 @@ namespace Day10
         {
             m_steps++;
         }
-#ifdef DEBUG_DAY_10
+#ifdef DEBUG_DAY_10_STEPS
         cout << "After step " << m_steps << " the area is:" << endl;
         m_area->display(true);
 #endif
@@ -406,5 +522,32 @@ string AocDay10::part1(string filename, vector<string> extra_args)
 
     ostringstream out;
     out << solver.get_steps();
+    return out.str();
+}
+
+string AocDay10::part2(string filename, vector<string> extra_args)
+{
+    vector<string> data = read_input(filename);
+    
+    Area area;
+    area.load_area(data);
+    
+    PathSolver solver(&area);
+    solver.init_start();
+    bool keep_going = true;
+    while (keep_going)
+    {
+        keep_going = solver.advance_path();
+    }
+    
+#ifdef DEBUG_DAY_10
+    cout << "Final pattern:" << endl;
+    area.display(true);
+#endif
+
+    area.set_inside_outside();
+
+    ostringstream out;
+    out << area.get_inside_count();
     return out.str();
 }

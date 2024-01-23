@@ -23,6 +23,7 @@ namespace Day10
         private:
             char m_symbol;
             int m_step_count;
+            bool m_inside;
         public:
             Cell();
             ~Cell();
@@ -33,6 +34,8 @@ namespace Day10
             bool is_visited();
             int get_step_count();
             void set_step_count(int step_count);
+            bool get_inside();
+            void set_inside(bool inside);
     };
     
     class Area
@@ -49,6 +52,8 @@ namespace Day10
             void load_area(vector<string> data);
             void display(bool visited_only = false);
             Cell * get_cell(int row, int col);
+            int get_inside_count();
+            void set_inside_outside();
     };
     
     struct Location
@@ -83,7 +88,7 @@ class AocDay10 : public AocDay
         AocDay10();
         ~AocDay10();
         string part1(string filename, vector<string> extra_args);
-        //string part2(string filename, vector<string> extra_args);
+        string part2(string filename, vector<string> extra_args);
 };
 
 #endif
