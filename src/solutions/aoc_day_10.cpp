@@ -258,6 +258,109 @@ namespace Day10
                 }
             }
         }
+        m_ends[0].row = m_start.row;
+        m_ends[0].col = m_start.col;
+        m_ends[1].row = m_start.row;
+        m_ends[1].col = m_start.col;        
+    }
+
+    bool PathSolver::advance_path()
+    {
+        bool advanced[2] = {true, true};
+        
+        for (int i=0; i<2; i++)
+        {
+#ifdef DEBUG_DAY_10
+            cout << "Checking neighbors from level " << m_steps 
+                 << " for end " << i 
+                 << " at row=" << m_ends[i].row << " col=" << m_ends[i].col << endl;
+#endif
+            Cell * current = m_area->get_cell(m_ends[i].row, m_ends[i].col);
+            Cell * neighbors[DAY_10_DIRECTIONS];
+            neighbors[north] = m_area->get_cell(m_ends[i].row-1, m_ends[i].col);
+            neighbors[east] = m_area->get_cell(m_ends[i].row, m_ends[i].col+1);
+            neighbors[south] = m_area->get_cell(m_ends[i].row+1, m_ends[i].col);
+            neighbors[west] = m_area->get_cell(m_ends[i].row, m_ends[i].col-1);
+            
+            if (current->can_connect(north) && 
+                neighbors[north]->can_connect(south) && 
+                (!neighbors[north]->is_visited()))
+            {
+#ifdef DEBUG_DAY_10
+                cout << " Current symbol " << current->get_symbol() 
+                     << " can connect north to symbol " << neighbors[north]->get_symbol() 
+                     << " at row=" << m_ends[i].row-1 << " col=" << m_ends[i].col << endl;
+#endif
+                advanced[i] = true;
+                neighbors[north]->set_step_count(m_steps+1);
+                m_ends[i].row = m_ends[i].row-1;
+                m_ends[i].col = m_ends[i].col;
+            }
+            else if (current->can_connect(east) && 
+                neighbors[east]->can_connect(west) && 
+                (!neighbors[east]->is_visited()))
+            {
+#ifdef DEBUG_DAY_10
+                cout << " Current symbol " << current->get_symbol() 
+                     << " can connect east to symbol " << neighbors[east]->get_symbol() 
+                     << " at row=" << m_ends[i].row << " col=" << m_ends[i].col+1 << endl;
+#endif
+                advanced[i] = true;
+                neighbors[east]->set_step_count(m_steps+1);
+                m_ends[i].row = m_ends[i].row;
+                m_ends[i].col = m_ends[i].col+1;
+            }
+            else if (current->can_connect(south) && 
+                neighbors[south]->can_connect(north) && 
+                (!neighbors[south]->is_visited()))
+            {
+#ifdef DEBUG_DAY_10
+                cout << " Current symbol " << current->get_symbol() 
+                     << " can connect south to symbol " << neighbors[south]->get_symbol() 
+                     << " at row=" << m_ends[i].row+1 << " col=" << m_ends[i].col << endl;
+#endif
+                advanced[i] = true;
+                neighbors[south]->set_step_count(m_steps+1);
+                m_ends[i].row = m_ends[i].row+1;
+                m_ends[i].col = m_ends[i].col;
+            }
+            else if (current->can_connect(west) && 
+                neighbors[west]->can_connect(east) && 
+                (!neighbors[west]->is_visited()))
+            {
+#ifdef DEBUG_DAY_10
+                cout << " Current symbol " << current->get_symbol() 
+                     << " can connect west to symbol " << neighbors[west]->get_symbol() 
+                     << " at row=" << m_ends[i].row << " col=" << m_ends[i].col-1 << endl;
+#endif
+                advanced[i] = true;
+                neighbors[west]->set_step_count(m_steps+1);
+                m_ends[i].row = m_ends[i].row;
+                m_ends[i].col = m_ends[i].col-1;
+            }
+            else
+            {
+#ifdef DEBUG_DAY_10
+                cout << " Current symbol " << current->get_symbol() 
+                     << " cannot connect to any neighbors" << endl;
+#endif                
+                advanced[i] = false;
+            }
+        }
+        if (advanced[0] == true || advanced[1] == true)
+        {
+            m_steps++;
+        }
+#ifdef DEBUG_DAY_10
+        cout << "After step " << m_steps << " the area is:" << endl;
+        m_area->display(true);
+#endif
+        return ((advanced[0] == true) && (advanced[1] == true));
+    }
+
+    int PathSolver::get_steps()
+    {
+        return m_steps;
     }
 }
 
@@ -290,8 +393,18 @@ string AocDay10::part1(string filename, vector<string> extra_args)
     
     PathSolver solver(&area);
     solver.init_start();
+    bool keep_going = true;
+    while (keep_going)
+    {
+        keep_going = solver.advance_path();
+    }
     
+#ifdef DEBUG_DAY_10
+    cout << "Final pattern:" << endl;
+    area.display(true);
+#endif
+
     ostringstream out;
-    out << 0;
+    out << solver.get_steps();
     return out.str();
 }

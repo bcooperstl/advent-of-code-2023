@@ -68,7 +68,9 @@ namespace Day10
             PathSolver(Area * area);
             ~PathSolver();
             void init_start();
-    };            
+            bool advance_path();
+            int get_steps();
+    };
 }
 
 using namespace Day10;
