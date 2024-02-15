@@ -11,22 +11,22 @@ namespace Day11
     {
         private:
             int m_id;
-            int m_row;
-            int m_col;
+            long m_row;
+            long m_col;
         public:
             Galaxy(int id, int row, int col);
             ~Galaxy();
-            void adjust_for_empties(vector<int> & empty_rows, vector<int> & empty_cols);
+            void adjust_for_empties(vector<int> & empty_rows, vector<int> & empty_cols, long factor=1);
             int get_id();
-            int get_row();
-            int get_col();
+            long get_row();
+            long get_col();
     };
     
     class Galaxies
     {
         private:
             vector<Galaxy> m_galaxies;
-            int get_steps(Galaxy * left, Galaxy * right);
+            long get_steps(Galaxy * left, Galaxy * right);
         public:
             Galaxies();
             ~Galaxies();
@@ -34,7 +34,7 @@ namespace Day11
             void adjust_all_for_empties(vector<int> & empty_rows, vector<int> & empty_cols);
             vector<int> find_empty_rows(vector<string> data);
             vector<int> find_empty_cols(vector<string> data);
-            int find_sum_of_distances();
+            long find_sum_of_distances();
     };
 }
 

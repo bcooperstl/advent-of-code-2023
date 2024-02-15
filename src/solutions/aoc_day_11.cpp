@@ -30,20 +30,20 @@ namespace Day11
         return m_id;
     }
     
-    int Galaxy::get_row()
+    long Galaxy::get_row()
     {
         return m_row;
     }
     
-    int Galaxy::get_col()
+    long Galaxy::get_col()
     {
         return m_col;
     }
     
-    void Galaxy::adjust_for_empties(vector<int> & empty_rows, vector<int> & empty_cols)
+    void Galaxy::adjust_for_empties(vector<int> & empty_rows, vector<int> & empty_cols, long factor)
     {
-        int num_rows_to_add = 0;
-        int num_cols_to_add = 0;
+        long num_rows_to_add = 0;
+        long num_cols_to_add = 0;
         for (int i=0; i<empty_rows.size(); i++)
         {
             if (empty_rows[i] < m_row)
@@ -62,8 +62,8 @@ namespace Day11
 #ifdef DEBUG_DAY_11
         cout << "Adjust galaxy " << m_id << " from row=" << m_row << " col=" << m_col;
 #endif
-        m_row += num_rows_to_add;
-        m_col += num_cols_to_add;
+        m_row += num_rows_to_add * factor;
+        m_col += num_cols_to_add * factor;
 #ifdef DEBUG_DAY_11
         cout << " to row=" << m_row << " col=" << m_col << endl;
 #endif
@@ -147,10 +147,10 @@ namespace Day11
         return empties;
     }
 
-    int Galaxies::get_steps(Galaxy * left, Galaxy * right)
+    long Galaxies::get_steps(Galaxy * left, Galaxy * right)
     {
-        int row_diff = abs(left->get_row() - right->get_row());
-        int col_diff = abs(left->get_col() - right->get_col());
+        long row_diff = abs(left->get_row() - right->get_row());
+        long col_diff = abs(left->get_col() - right->get_col());
         return row_diff+col_diff;
     }
     
@@ -162,15 +162,15 @@ namespace Day11
         }
     }
     
-    int Galaxies::find_sum_of_distances()
+    long Galaxies::find_sum_of_distances()
     {
-        int sum = 0;
+        long sum = 0;
         
         for (int first_idx=0; first_idx < (m_galaxies.size() - 1); first_idx++)
         {
             for (int second_idx=first_idx+1; second_idx < m_galaxies.size(); second_idx++)
             {
-                int steps = get_steps(&m_galaxies[first_idx], &m_galaxies[second_idx]);
+                long steps = get_steps(&m_galaxies[first_idx], &m_galaxies[second_idx]);
                 sum+=steps;
 #ifdef DEBUG_DAY_11
                 cout << "Galaxy " << m_galaxies[first_idx].get_id() 
