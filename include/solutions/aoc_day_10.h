@@ -23,7 +23,6 @@ namespace Day10
         private:
             char m_symbol;
             int m_step_count;
-            bool m_inside;
         public:
             Cell();
             ~Cell();
@@ -34,8 +33,6 @@ namespace Day10
             bool is_visited();
             int get_step_count();
             void set_step_count(int step_count);
-            bool get_inside();
-            void set_inside(bool inside);
     };
     
     class Area
@@ -44,6 +41,7 @@ namespace Day10
             Cell m_map[DAY_10_MAX_EDGE_LENGTH][DAY_10_MAX_EDGE_LENGTH];
             int m_rows;
             int m_cols;
+            void replace_start_with_symbol();
         public:
             Area();
             ~Area();

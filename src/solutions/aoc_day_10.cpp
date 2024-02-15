@@ -17,6 +17,8 @@ using namespace Day10;
 #define SOUTH_EAST 'F'
 #define GROUND '.'
 #define START 'S'
+#define INSIDE 'I'
+#define OUTSIDE 'O'
 
 #define NO_STEPS -1
 
@@ -26,7 +28,6 @@ namespace Day10
     {
         m_symbol = GROUND;
         m_step_count = NO_STEPS;
-        m_inside = false;
     }
     
     Cell::~Cell()
@@ -153,16 +154,6 @@ namespace Day10
         m_step_count = step_count;
     }
     
-    bool Cell::get_inside()
-    {
-        return m_inside;
-    }
-    
-    void Cell::set_inside(bool inside)
-    {
-        m_inside = inside;
-    }
-    
     Area::Area()
     {
         m_rows = 0;
@@ -248,7 +239,7 @@ namespace Day10
         {
             for (int col=0; col<m_cols; col++)
             {
-                if (m_map[row][col].get_inside() == true)
+                if (m_map[row][col].get_symbol() == INSIDE)
                 {
                     num_inside++;
                 }
@@ -261,11 +252,11 @@ namespace Day10
     {
         int start_row;
         int start_col;
-        for (int row=0; row<m_area->get_rows(); row++)
+        for (int row=0; row<m_rows; row++)
         {
-            for (int col=0; col<m_area->get_cols(); col++)
+            for (int col=0; col<m_cols; col++)
             {
-                if (m_area->get_cell(row, col)->is_start())
+                if (m_map[row][col].is_start())
                 {
                     start_row = row;
                     start_col = col;
@@ -327,23 +318,112 @@ namespace Day10
         }
 #ifdef DEBUG_DAY_10
         cout << "Replaced start symbol at row=" << start_row << " col=" << start_col << " with " << m_map[start_row][start_col].get_symbol() << endl;
+        display();
 #endif            
     }
     
     void Area::set_inside_outside()
     {
-        replace_start_with_symbol()
+        replace_start_with_symbol();
+
         // First do the rows left to right
-        for (int row=1; row<(m_rows-1); row++)
+        for (int row=0; row<m_rows; row++)
         {
 #ifdef DEBUG_DAY_10
             cout << "Checking for inside cell on row " << row << endl;
 #endif            
             int num_crossed = 0;
-            for (int col=1; col<(m_cols-1); col++)
-            {
-                if (m_map[row][col]
-
+            char last_vertical = GROUND;
+            for (int col=0; col<m_cols; col++)
+            {                
+                // on the border
+                if (m_map[row][col].is_visited())
+                {
+                    char symbol = m_map[row][col].get_symbol();
+                    if (symbol == VERTICAL)
+                    {
+                        num_crossed++;
+#ifdef DEBUG_DAY_10
+                        cout << " Crossing vertical at col " << col << "; increasing num_crossed=" << num_crossed << endl;
+#endif            
+                    }
+                    else if (symbol == NORTH_WEST)
+                    {
+                        if (last_vertical == SOUTH_EAST)
+                        {
+                            num_crossed++;
+#ifdef DEBUG_DAY_10
+                            cout << " Crossing north_west at col " << col << " with prior south_east; increase num_crossed=" << num_crossed << endl;
+#endif
+                        }
+                        else if (last_vertical == NORTH_EAST)
+                        {
+#ifdef DEBUG_DAY_10
+                            cout << " Crossing north_west at col " << col << " with prior north_east; keeping num_crossed=" << num_crossed << endl;
+#endif
+                        }
+                        else
+                        {
+                            cerr << "*****ERROR with NORTH_WEST at row=" << row << " col=" << col << endl;
+                        }
+                    }
+                    else if (symbol == SOUTH_WEST)
+                    {
+                        if (last_vertical == NORTH_EAST)
+                        {
+                            num_crossed++;
+#ifdef DEBUG_DAY_10
+                            cout << " Crossing south_west at col " << col << " with prior north_east; increase num_crossed=" << num_crossed << endl;
+#endif
+                        }
+                        else if (last_vertical == SOUTH_EAST)
+                        {
+#ifdef DEBUG_DAY_10
+                            cout << " Crossing south_west at col " << col << " with prior south_east; keeping num_crossed=" << num_crossed << endl;
+#endif
+                        }
+                        else
+                        {
+                            cerr << "*****ERROR with SOUTH_WEST at row=" << row << " col=" << col << endl;
+                        }
+                    }
+                    else if (symbol == SOUTH_EAST)
+                    {
+                        last_vertical = SOUTH_EAST;
+#ifdef DEBUG_DAY_10
+                        cout << " Setting last_vertical to south_east at col " << col << endl;
+#endif
+                    }
+                    else if (symbol == NORTH_EAST)
+                    {
+                        last_vertical = NORTH_EAST;
+#ifdef DEBUG_DAY_10
+                        cout << " Setting last_vertical to north_east at col " << col << endl;
+#endif
+                    }
+                }
+                else
+                {
+                    if ((num_crossed % 2) == 0)
+                    {
+                        m_map[row][col].set_symbol(OUTSIDE);
+#ifdef DEBUG_DAY_10
+                        cout << " Setting col " << col << " to outside because num_crossed=" << num_crossed << endl;
+#endif
+                    }
+                    else
+                    {
+                        m_map[row][col].set_symbol(INSIDE);
+#ifdef DEBUG_DAY_10
+                        cout << " Setting col " << col << " to inside because num_crossed=" << num_crossed << endl;
+#endif
+                    }
+                }
+            }
+#ifdef DEBUG_DAY_10
+            display();
+#endif            
+        }
     }
     
     PathSolver::PathSolver(Area * area)
