@@ -42,6 +42,8 @@ namespace Day11
     
     void Galaxy::adjust_for_empties(vector<int> & empty_rows, vector<int> & empty_cols, long factor)
     {
+        factor-=1;
+        
         long num_rows_to_add = 0;
         long num_cols_to_add = 0;
         for (int i=0; i<empty_rows.size(); i++)
@@ -62,8 +64,14 @@ namespace Day11
 #ifdef DEBUG_DAY_11
         cout << "Adjust galaxy " << m_id << " from row=" << m_row << " col=" << m_col;
 #endif
-        m_row += num_rows_to_add * factor;
-        m_col += num_cols_to_add * factor;
+        if (num_rows_to_add != 0)
+        {
+            m_row += (num_rows_to_add * factor);
+        }
+        if (num_cols_to_add != 0)
+        {
+            m_col += (num_cols_to_add * factor);
+        }
 #ifdef DEBUG_DAY_11
         cout << " to row=" << m_row << " col=" << m_col << endl;
 #endif
@@ -154,11 +162,11 @@ namespace Day11
         return row_diff+col_diff;
     }
     
-    void Galaxies::adjust_all_for_empties(vector<int> & empty_rows, vector<int> & empty_cols)
+    void Galaxies::adjust_all_for_empties(vector<int> & empty_rows, vector<int> & empty_cols, long factor)
     {
         for (int i=0; i<m_galaxies.size(); i++)
         {
-            m_galaxies[i].adjust_for_empties(empty_rows, empty_cols);
+            m_galaxies[i].adjust_for_empties(empty_rows, empty_cols, factor);
         }
     }
     
@@ -215,6 +223,32 @@ string AocDay11::part1(string filename, vector<string> extra_args)
     vector<int> empty_cols = galaxies.find_empty_cols(data);
     
     galaxies.adjust_all_for_empties(empty_rows, empty_cols);
+    
+    ostringstream out;
+    out << galaxies.find_sum_of_distances();
+    return out.str();
+}
+
+string AocDay11::part2(string filename, vector<string> extra_args)
+{
+    long factor = 1000000;
+    
+    if (extra_args.size() != 0)
+    {
+        factor = strtol(extra_args[0].c_str(), NULL, 10);
+    }
+    
+    cout << "Running day 11 part 2 with factor " << factor << endl;
+    
+    vector<string> data = read_input(filename);
+    
+    Galaxies galaxies;
+    galaxies.load_galaxies(data);
+    
+    vector<int> empty_rows = galaxies.find_empty_rows(data);
+    vector<int> empty_cols = galaxies.find_empty_cols(data);
+    
+    galaxies.adjust_all_for_empties(empty_rows, empty_cols, factor);
     
     ostringstream out;
     out << galaxies.find_sum_of_distances();

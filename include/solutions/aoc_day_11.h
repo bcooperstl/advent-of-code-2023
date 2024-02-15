@@ -16,7 +16,7 @@ namespace Day11
         public:
             Galaxy(int id, int row, int col);
             ~Galaxy();
-            void adjust_for_empties(vector<int> & empty_rows, vector<int> & empty_cols, long factor=1);
+            void adjust_for_empties(vector<int> & empty_rows, vector<int> & empty_cols, long factor);
             int get_id();
             long get_row();
             long get_col();
@@ -31,7 +31,7 @@ namespace Day11
             Galaxies();
             ~Galaxies();
             void load_galaxies(vector<string> data);
-            void adjust_all_for_empties(vector<int> & empty_rows, vector<int> & empty_cols);
+            void adjust_all_for_empties(vector<int> & empty_rows, vector<int> & empty_cols, long factor=2);
             vector<int> find_empty_rows(vector<string> data);
             vector<int> find_empty_cols(vector<string> data);
             long find_sum_of_distances();
@@ -48,7 +48,7 @@ class AocDay11 : public AocDay
         AocDay11();
         ~AocDay11();
         string part1(string filename, vector<string> extra_args);
-        //string part2(string filename, vector<string> extra_args);
+        string part2(string filename, vector<string> extra_args);
 };
 
 #endif
