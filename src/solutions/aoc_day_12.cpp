@@ -124,12 +124,44 @@ namespace Day12
         }
     }
     
+    int Group::get_num_arrangements_recursive(Positions * positions, int group_number, int start_position)
+    {
+        int num_arrangements = 0;
+        int group_size = m_groups[group_number];
+#ifdef DEBUG_DAY_12
+        cout << "Checking for group " << group_number << " with size " << group_size
+             << " and num_good_positions " << positions->num_good_positions[group_size]
+             << " starting at " << start_position << endl;
+#endif
+        for (int i=0; i<positions->num_good_positions[group_size]; i++)
+        {
+#ifdef DEBUG_DAY_12
+            cout << " Group number " << group_number << " i=" << i 
+                 << " starts at " << positions->start_positions[group_size][i] << endl;
+#endif
+            if (positions->start_positions[group_size][i] >= start_position)
+            {
+                if (group_number == (m_num_groups - 1))
+                {
+#ifdef DEBUG_DAY_12
+                    cout << " VALID ARRANGEMENT FOUND!" << endl;
+#endif
+                    num_arrangements++;
+                }
+                else
+                {
+                    num_arrangements += get_num_arrangements_recursive(positions, group_number+1, positions->start_positions[group_size][i]+group_size+1);
+                }
+            }
+        }
+        return num_arrangements;
+    }
+    
     int Group::get_num_arrangements()
     {
         Positions positions;
         find_starting_positions(&positions);
-        
-        return 0;
+        return get_num_arrangements_recursive(&positions, 0, 0);
     }
     
 

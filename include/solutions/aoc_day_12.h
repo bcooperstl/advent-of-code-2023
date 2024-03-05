@@ -29,6 +29,7 @@ namespace Day12
             bool can_be_damaged(int pos);
             void find_starting_positions(Positions * positions);
             void display();
+            int get_num_arrangements_recursive(Positions * positions, int group_number, int start_position);
         public:
             Group();
             ~Group();
