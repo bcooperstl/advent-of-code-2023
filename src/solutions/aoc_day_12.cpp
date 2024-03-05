@@ -111,6 +111,15 @@ namespace Day12
                         break;
                     }
                 }
+
+                if (((start + length) < (m_condition_length - 1)) && m_conditions[start+length] == DAMAGED)
+                {
+                    good = false;
+#ifdef DEBUG_DAY_12
+                    cout << "Does not work because of damaged at " << start + length << endl;
+#endif
+                }
+
                 if (good)
                 {
 #ifdef DEBUG_DAY_12
