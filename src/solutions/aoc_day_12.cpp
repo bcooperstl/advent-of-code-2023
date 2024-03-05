@@ -148,14 +148,52 @@ namespace Day12
             cout << " Group number " << group_number << " i=" << i 
                  << " starts at " << positions->start_positions[group_size][i] << endl;
 #endif
+
+            int pre_pos = start_position;
+            bool skip_for_pre_damage = false;
+            while (pre_pos < positions->start_positions[group_size][i])
+            {
+                if (m_conditions[pre_pos] == DAMAGED)
+                {
+#ifdef DEBUG_DAY_12
+                    cout << " INVALID - Pre-position damage found at " << pre_pos << endl;
+#endif
+                    skip_for_pre_damage = true;
+                    break;
+                }
+                pre_pos++;
+            }
+            if (skip_for_pre_damage == true)
+            {
+                continue;
+            }
+            
+            
             if (positions->start_positions[group_size][i] >= start_position)
             {
                 if (group_number == (m_num_groups - 1))
                 {
+                    int remainder_pos = positions->start_positions[group_size][i]+group_size+1;
+                    bool still_good = true;
+                    while (remainder_pos < m_condition_length)
+                    {
+                        if (m_conditions[remainder_pos] == DAMAGED)
+                        {
 #ifdef DEBUG_DAY_12
-                    cout << " VALID ARRANGEMENT FOUND!" << endl;
+                            cout << " INVALID - Extra damage found at " << remainder_pos << endl;
 #endif
-                    num_arrangements++;
+                            still_good = false;
+                            break;
+                        }
+                        remainder_pos++;
+                    }
+                    if (still_good)
+                    {
+#ifdef DEBUG_DAY_12
+                        cout << " VALID ARRANGEMENT FOUND!" << endl;
+#endif
+                        num_arrangements++;
+                    }
                 }
                 else
                 {
